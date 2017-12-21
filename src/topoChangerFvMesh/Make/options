@@ -1,0 +1,15 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/dynamicFvMesh/lnInclude \
+    -I$(LIB_SRC)/dynamicMesh/lnInclude \
+    -I$(LIB_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -IlnInclude
+
+LIB_LIBS = \
+    -lfiniteVolume \
+    -ldynamicFvMesh \
+    -ldynamicMesh \
+    -ltopoChangerFvMesh \
+    -lmeshTools
+

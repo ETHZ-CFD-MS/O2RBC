@@ -1,0 +1,19 @@
+EXE_INC = \
+    -Wno-old-style-cast \
+    -Wno-unused-local-typedefs \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(OF_CBF_SRC)/meshTools/lnInclude \
+    -I$(OF_CBF_SRC)/graph/lnInclude \
+    -I$(OF_CBF_SRC)/miscellaneous/lnInclude \
+    -I$(BOOST_INCLUDEDIR)
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -lmeshTools \
+    -lsampling \
+    -L$(FOAM_USER_LIBBIN) \
+    -lcustomMeshTools \
+    -lmiscellaneous \
+    -lgraph
+

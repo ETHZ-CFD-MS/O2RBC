@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+
+source config_vars
+N_rbc=${#RBCDirs[@]}
+
+
+./cleanCase >> log.cleanCase
+
+
+./removeLinks
+
+
+./createRBCMesh
+
+
+./makeLinks
+
+
+./testRegionAddRemoveFvMesh -case $RBCCaseDir
+
+

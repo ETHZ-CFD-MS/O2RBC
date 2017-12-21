@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# Add an OpenFOAM case with RBCs in a graph to git
+#
+
+source config_vars
+
+# add scripts
+git add Allrun cleanCase makeLinks prepareEulerianCase createRBCMesh removeLinks runCase
+
+# add files in root directory
+git add config_vars initialConditions
+if [[ -f RBCPathParams.json ]]; then
+    git add RBCPathParams.json
+fi
+if [[ -f geometricData ]]; then
+    git add geometricData
+fi
+if test -n "$(find . -maxdepth 1 -name '*.stl' -print -quit)"; then
+    git add *.stl
+fi
+
+# add files in domain
+cd $eulerCaseDir
+git add 0.org *.foam
+git add constant/transportProperties constant/polyMesh/blockMeshDict
+git add constant/edgeVelocities constant/graphDict constant/RBCPaths
+git add constant/RBCBaseGeometricState
+git add constant/cylinder/polyMesh/cylinderMesh.m4
+git add system/controlDict system/fvS*
+git add system/setFieldsDict system/topoSetDict.lumen system/RBCMoverDict
+git add system/decomposeParDict system/graphVelocityEngineDict
+git add system/topoSetDict.graphNeighbours system/refineMeshDict
+git add system/cylinder system/lumen
+cd system
+if test -n "$(find . -maxdepth 1 -name 'singleGraph*' -print -quit)"; then
+    git add singleGraph*
+fi
+cd ../..
+
+# add files in RBCSource, if present
+if [[ -n $RBCSourceDir ]] && [[ -d $RBCSourceDir ]]; then
+    cd $RBCSourceDir
+    git add *.foam
+    git add constant/polyMesh/blockMeshDict
+    git add constant/RBCBaseGeometricState
+    git add system/controlDict system/topoSetDict system/fv*
+    cd ..
+fi
+
+# add files in sampleRBC, if present
+if [[ -n $sampleRBCDir ]] && [[ -d $sampleRBCDir ]]; then
+    cd $sampleRBCDir
+    git add 0.org *.foam
+    git add constant/polyMesh/blockMeshDict
+    git add constant/RBCBaseGeometricState
+    git add system/controlDict system/fv*
+    cd ..
+fi
+
+# add files in RBC directory
+cd $RBCCaseDir
+git add 0.org *.foam
+git add system/controlDict system/fv* system/decomposeParDict
+git add constant/polyMesh
+cd ..
+

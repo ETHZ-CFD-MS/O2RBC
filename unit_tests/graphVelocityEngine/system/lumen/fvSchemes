@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      binary;
+    class       dictionary;
+    location    "system/lumen";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+divSchemes
+{
+    div(phiLumen)      Gauss linear corrected;
+    div(UMappedLumen)  Gauss linear corrected;
+    div(fCorr)         Gauss linear corrected;
+}
+
+gradSchemes
+{
+    grad(fCorr)        Gauss linear corrected;
+}
+
+laplacianSchemes
+{
+    laplacian(fCorr)   Gauss linear corrected;
+}
+
+fluxRequired
+{
+    default no;
+    fCorr   ;
+}
+
+
+// ************************************************************************* //

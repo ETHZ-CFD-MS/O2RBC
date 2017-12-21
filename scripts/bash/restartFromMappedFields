@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+usage() { echo "Usage: $0 [-c] [-s <sourceDir>]" 1>&2; exit 1; }
+
+getLastTime()
+{
+    caseName=$1
+    cd $1/domain
+    ls -d [0-9]* | tail -n 1
+}
+
+consistentFlag=""
+while getopts ":cs:" o; do
+    case "${o}" in
+        s)
+            sourceCase=${OPTARG}
+            ;;
+        c)
+            consistentFlag="-consistent"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+         
+if [ ! -d "$sourceCase" ]; then
+    echo "Directory $sourceCase does not exist."
+    echo ""
+    usage
+fi
+
+lastTime=`getLastTime $sourceCase`
+
+./removeLinks
+./cleanCase
+./prepareEulerianCase
+./createRBCMesh
+./makeLinks
+
+# create RBC meshes
+myRunApplication initializeHbPOGraph $pFlag -np $nProcs -case $eulerCaseDir
+
+# map fields
+myRunApplication mapFields $pFlag -np $nProcs -case $eulerCaseDir $consistentFlag \
+    -mapMethod mapNearest -sourceTime $lastTime $sourceCase/$eulerCaseDir
+myRunApplication interpolateEulerianFieldsToRBC $pFlag -np $nProcs -case $eulerCaseDir
+
+myRunApplication hbPOGraphFoam $pFlag -np $nProcs -case $eulerCaseDir | tee log.hbPOGraphFoam

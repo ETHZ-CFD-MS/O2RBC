@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# Create a super-RBC mesh with several RBC cellZones.
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Create a region mesh using a STL surface and splitMeshRegions
+# arg1: case name
+# arg2: name of the region to create
+# arg3: displacement of the STL surface in x-direction
+createRegionMesh () {
+    caseName=$1
+    regionName=$2
+    xDisplacement=$3
+
+    dictName="system/topoSetDict"
+    tmpDictName="system/topoSetDict.tmp"
+    STLName="unit_sphere_small.stl"
+    STLTranslated="unit_sphere_small_translated.stl"
+
+    # Change directory
+    cd $caseName
+
+    # Wipe out all cell sets
+    rm -f constant/polyMesh/sets/*
+    rm -f constant/polyMesh/cellZones
+
+    # Translate the STL surface
+    # echo "Transforming STL surface"
+    transformSTLSurface.py -f $STLName --tx $xDisplacement > $STLTranslated
+
+    # Change the name of the cellSet in the topoSetDict
+    eval sed 's/RBC/$regionName/' $dictName > $tmpDictName
+    # Create cellSet corresponding to the STL surface
+    runApplication topoSet -dict $tmpDictName
+    mv log.topoSet log.topoSet.$regionName
+    rm $tmpDictName $STLTranslated
+
+    # Create cellZone
+    runApplication setsToZones -noFlipMap
+    mv log.setsToZones log.setsToZones.$regionName
+
+    # Use splitMeshRegions
+    runApplication splitMeshRegions -cellZones -overwrite
+    mv log.splitMeshRegions log.splitMeshRegions.$regionName
+
+    # clean up useless stuff
+    rm -rf 0/domain0
+    rm -rf constant/domain0
+    rm -rf system/domain0
+
+    cd ..
+}
+
+copyRegionMesh() {
+    srcCaseName=$1
+    copiedMeshName=$2
+    mkdir -p $copiedMeshName/system
+    mkdir -p $copiedMeshName/constant
+    mkdir -p $copiedMeshName/0
+
+    if [ ! -f $copiedMeshName/system/controlDict  ]; then
+        cp    $srcCaseName/system/controlDict $copiedMeshName/system/controlDict
+    fi
+    cp -r $srcCaseName/constant/$copiedMeshName/polyMesh $copiedMeshName/constant
+}
+
+cellSourceDir=RBCSource
+RBCCaseDir=RBC
+
+# Copy fields to 0 directory
+cd $RBCCaseDir
+mkdir -p 0
+# cp 0.org/Hb.org        0/Hb
+# cp 0.org/PO2_RBC.org   0/PO2_RBC
+# cp 0.org/in_RBC.org    0/in_RBC
+# cp 0.org/meshPhi.org   0/meshPhi
+# cp 0.org/geometry.org  0/geometry
+cd ..
+
+
+# Create mesh from which all RBC meshes will be generated
+runApplication blockMesh -case $cellSourceDir
+
+# Create superRBC mesh
+createRegionMesh $cellSourceDir $RBCCaseDir 0
+copyRegionMesh $cellSourceDir $RBCCaseDir
+
+# Create second RBC
+createRegionMesh $cellSourceDir RBC1 5e-6
+copyRegionMesh $cellSourceDir RBC1
+runApplication mergeMeshes -overwrite $RBCCaseDir RBC1
+mv log.mergeMeshes log.mergeMeshes.RBC1
+rm -r RBC1
+
+# Create third RBC, but do not merge it
+createRegionMesh $cellSourceDir RBC2 10e-6
+copyRegionMesh $cellSourceDir RBC2
+# runApplication mergeMeshes -overwrite $RBCCaseDir RBC2
+# mv log.mergeMeshes log.mergeMeshes.RBC2
+# rm -r RBC2
+
+# Create a unique patch for the $RBCCaseDir
+runApplication createPatch -case $RBCCaseDir -overwrite
+
+# Clean-up remaining files
+rm $cellSourceDir/0/cellToRegion
+
+touch $RBCCaseDir/$RBCCaseDir.foam
+
+
+
+
+

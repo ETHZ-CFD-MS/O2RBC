@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    {
+        name    RBC;
+        type    cellSet;
+        action  clear;
+    }
+    {
+        name    RBC;
+        type    cellSet;
+        action  add;
+        source  surfaceToCell;
+        sourceInfo
+        {
+            file            "unit_sphere_small_translated.stl";
+            outsidePoints   ((3e-6 1.8e-6 0.0) (0 1.8e-06 0.0));
+            includeCut      false;
+            includeInside   true;
+            includeOutside  false;
+            nearDistance    -1;
+            curvature       0.9;
+        }
+    }
+    {
+        name    RBCFaces;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        sourceInfo
+        {
+            set      RBC;
+            option   all;
+        }
+    }
+    {
+        name    RBCPoints;
+        type    pointSet;
+        action  new;
+        source  cellToPoint;
+        sourceInfo
+        {
+            set      RBC;
+            option   all;
+        }
+    }
+    // {
+        // name    RBCFacesSlaveCells;
+        // type    cellSet;
+        // action  new;
+        // source  cellToCell;
+        // sourceInfo
+        // {
+            // set      RBC;
+        // }
+    // }
+    // {
+        // name    RBCFacesSlaveCells;
+        // type    cellSet;
+        // action  invert;
+    // }
+);
+

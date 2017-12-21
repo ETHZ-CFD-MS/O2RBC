@@ -1,0 +1,9 @@
+#!/bin/bash
+
+blockMesh
+topoSet
+
+expandCellSet -set testSet -layers 2
+
+foamToVTK -cellSet testSetExpanded
+

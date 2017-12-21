@@ -1,0 +1,23 @@
+{
+    "postprocessing": [
+        {
+            "type": "PO2Drop",
+            "sampledSetDir": "singleGraph.x_axis",
+            "wallSetName": "wall",
+            "tissueSetName": "tissueProbes",
+            "probeIndex": 5,
+            "tissueWallDistance": 15e-6
+        },
+        {
+            "type": "probes",
+            "probeName": "probesTissuePO2",
+            "fieldName": "PO2",
+            "minTime": 0.0,
+            "probeIndex": 2
+        }
+    ],
+    "plotting":
+        {
+            "type": "PO2Drop"
+        }
+}

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+blockMesh -case sampleRBC
+
+adjustRBCMeshVolume

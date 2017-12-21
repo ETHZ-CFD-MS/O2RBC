@@ -1,0 +1,6 @@
+#!/bin/bash
+
+blockMesh
+decomposePar -force
+
+mpirun -np 8 testRandom -parallel

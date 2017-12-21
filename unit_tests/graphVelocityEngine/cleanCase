@@ -1,0 +1,15 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# remove links for cylinder mesh
+for proc in processor* ; do
+    rm -rf $proc/0/cylinder
+    rm -rf $proc/constant/cylinder
+done
+
+rm -r  processor*
+rm -r  [0-9]
+rm -rf constant/tube?
+rm -rf log.*
+

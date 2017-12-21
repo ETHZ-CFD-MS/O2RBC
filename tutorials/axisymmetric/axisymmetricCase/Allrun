@@ -1,0 +1,9 @@
+#!/bin/bash
+
+./removeLinks
+prepareAxisymmetricCase.py
+./cleanCase >> log.cleanCase
+./prepareEulerianCase
+./createRBCMesh
+./makeLinks
+./runCase

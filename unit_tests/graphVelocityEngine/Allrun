@@ -1,0 +1,55 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+./cleanCase
+
+# replace initial fields
+mkdir -p 0/cylinder
+cp 0.org/cylinder.org/inLumenCylinder.org  0/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org   0/cylinder/inWallCylinder
+
+# create domain mesh
+runApplication blockMesh
+mv log.blockMesh log.blockMesh.domain
+runApplication checkMesh
+mv log.checkMesh log.checkMesh.domain
+
+# create base cylinder mesh (for vascular regions)
+m4 constant/cylinder/polyMesh/cylinderMesh.m4 \
+ > constant/cylinder/polyMesh/blockMeshDict 
+runApplication blockMesh -region cylinder
+mv log.blockMesh log.blockMesh.cylinder
+runApplication checkMesh -region cylinder
+mv log.checkMesh log.checkMesh.cylinder
+
+# set field values in cylinder
+runApplication topoSet -region cylinder
+mv log.topoSet log.topoSet.cylinder
+runApplication setFields -region cylinder
+mv log.setFields log.setFields.cylinder
+
+# create the vascular graph regions
+runApplication createVascularGraphRegions
+
+# create a mesh region for the lumen
+runApplication topoSet -dict system/topoSetDict.lumen
+runApplication setsToZones
+runApplication splitMeshRegions -cellZones -overwrite
+
+# remove unnecessary folders and fields (only keep U in lumen)
+rm -r system/nonLumen
+rm -r constant/nonLumen
+rm -r 0/nonLumen
+cp 0.org/fCorr.org 0/lumen/fCorr
+
+# run the test case
+runApplication testGraphVelocityEngine
+
+# extract divergence of relevant fields
+foamCalc div phiLumen     -region lumen
+foamCalc div UMappedLumen -region lumen
+
+# transform surface fields to VTK format
+foamToVTK -surfaceFields
+foamToVTK -surfaceFields -region lumen

@@ -1,0 +1,6 @@
+*.pkl
+
+sandboxDict
+constant/RBCPaths
+constant/edgeVelocities
+constant/graphDict

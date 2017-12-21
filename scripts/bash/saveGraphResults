@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# Save results of a CBF simulation with graphs
+
+dir_name=$1
+
+source config_vars
+
+mkdir -p $dir_name/domain
+cp initialConditions $dir_name
+
+# do not follow symbolic links when copying
+cp -Lr domain/0.org        $dir_name/domain
+cp -Lr domain/0            $dir_name/domain
+mv     domain/[0-9][0-9]*.[0-9]* $dir_name/domain
+mv     domain/[1-9][0-9]*  $dir_name/domain
+mv     domain/[1-9]        $dir_name/domain
+mv     domain/processor*   $dir_name/domain
+cp -Lr domain/constant     $dir_name/domain
+cp -Lr domain/system       $dir_name/domain
+cp     domain/*.foam       $dir_name/domain
+
+cp -Lr RBC $dir_name
+cp -Lr RBCSource $dir_name
+
+mv log.* $dir_name
+
+count=`ls -1 domain/*.stl 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    for f in *.stl; do
+        echo $f
+        ln -s $(readlink -f $f) $dir_name/$f
+        symlinks -c $dir_name
+    done
+fi
+
+count=`ls -1 domain/*.png 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/*.png $dir_name/domain
+fi
+count=`ls -1 domain/postProcessing 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/postProcessing $dir_name/domain
+fi
+count=`ls -1 domain/VTK 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+mv domain/VTK $dir_name/domain
+fi
+

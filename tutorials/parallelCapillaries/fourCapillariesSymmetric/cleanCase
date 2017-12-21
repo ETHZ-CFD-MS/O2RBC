@@ -1,0 +1,58 @@
+#!/bin/bash
+
+source config_vars
+
+# make a backup of the postprocessing files
+if [ -d $eulerCaseDir/postProcessing ]; then
+    rm -rf $eulerCaseDir/oldPostProcessing
+    mv $eulerCaseDir/postProcessing $eulerCaseDir/oldPostProcessing
+fi
+
+rm -rf $eulerCaseDir/constant/tube[0-9]*
+rm -rf $eulerCaseDir/constant/lumen
+rm -f  $eulerCaseDir/constant/cellToRegion*
+
+rm -rf $eulerCaseDir/processor*
+rm -rf $RBCCaseDir/processor*
+
+rm -rf $eulerCaseDir/[0-9][0-9]*.[0-9]*
+rm -rf $eulerCaseDir/[0-9].[0-9]*
+rm -rf $eulerCaseDir/[0-9][0-9]*
+rm -rf $eulerCaseDir/[0-9]
+rm -rf $eulerCaseDir/*e-05 $eulerCaseDir/*e-06
+
+rm -rf $RBCCaseDir/[0-9][0-9]*.[0-9]*
+rm -rf $RBCCaseDir/[0-9].[0-9]*
+rm -rf $RBCCaseDir/[0-9][0-9]*
+rm -rf $RBCCaseDir/[0-9]
+rm -rf $RBCCaseDir/*e-05 $RBCCaseDir/*e-06
+
+cd $eulerCaseDir/constant/polyMesh
+rm -f boundary faces* owner* neighbour* points* cellZones*
+rm -f cellLevel* level0Edge* pointLevel* refinementHistory*
+rm -rf sets
+cd ../../..
+
+cd $eulerCaseDir/constant/cylinder
+rm -f inLumenCylinder* inWallCylinder*
+cd polyMesh
+rm -f blockMeshDict boundary faces* owner* neighbour* points* cellZones*
+rm -rf sets
+cd ../../../..
+
+cd $RBCSourceDir
+rm -rf 0/*
+rm -rf system/RBC system/nonRBC
+cd constant
+rm -rf RBC nonRBC cellToRegion
+for sampleDir in ${RBCSourceRegions[@]}
+do
+    rm -rf $sampleDir
+done
+cd polyMesh
+rm -f boundary points* faces* owner* neighbour* cellZones* faceZones* pointZones*
+rm -rf sets
+cd ../../..
+
+rm -f log.*
+

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+rm -r 0
+rm -r constant/tube[0-9][0-9]*
+rm log.*
+rm *.obj
+
+# case 1: loop topology
+cp constant/graphDict.loop constant/graphDict; 
+cp constant/polyMesh/blockMeshDict.loop constant/polyMesh/blockMeshDict
+
+# case 2: VGM box topology
+# cp constant/graphDict.VGMBox_2014_11_05 constant/graphDict; 
+# cp constant/polyMesh/blockMeshDict.VGMBox constant/polyMesh/blockMeshDict
+
+mkdir -p 0/cylinder
+
+cp 0.org/cylinder.org/inLumenCylinder.org 0/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org  0/cylinder/inWallCylinder
+
+runApplication blockMesh
+mv log.blockMesh log.blockMesh.domain
+runApplication checkMesh
+mv log.checkMesh log.checkMesh.domain
+
+m4 constant/cylinder/polyMesh/cylinderMesh.m4 > constant/cylinder/polyMesh/blockMeshDict 
+runApplication blockMesh -region cylinder
+runApplication checkMesh -region cylinder
+
+runApplication topoSet -region cylinder
+
+runApplication setFields -region cylinder
+
+runApplication ./testVascularGraphRegions
+
+foamToVTK -surfaceFields
+# foamToVTK -cellSet

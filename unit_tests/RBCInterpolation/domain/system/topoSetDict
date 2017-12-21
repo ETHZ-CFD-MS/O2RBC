@@ -1,0 +1,96 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+# include "../../geometricData"
+
+actions
+(
+    {
+        name    plasma;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       (-1 0 0);
+            p2       (1 0 0);
+            radius   $R_plasma;
+        }
+    }
+    {
+        name    plasma_wall;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       (-1 0 0);
+            p2       (1 0 0);
+            radius   $R_wall;
+        }
+    }
+    {
+        name    tissue;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasma_wall;
+        }
+    }
+    {
+        name    tissue;
+        type    cellSet;
+        action  invert;
+    }
+
+    {
+        name    wall;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasma_wall;
+        }
+    }
+    {
+        name    wall;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasma;
+        }
+    }
+
+    {
+        name    centerline;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       (-1 0 0);
+            p2       (1 0 0);
+            radius   $R_centerline;
+        }
+    }
+);
+

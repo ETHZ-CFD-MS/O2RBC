@@ -1,0 +1,11 @@
+xMin    77e-6;
+xMax    185e-6;
+yMin    45e-6;
+yMax    193e-6;
+zMin    85e-6;
+zMax    200e-6;
+
+dx      2e-6;
+
+#inputMode merge
+

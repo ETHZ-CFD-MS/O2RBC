@@ -1,0 +1,30 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+source config_vars
+
+# replace initial fields
+cd $eulerCaseDir
+mkdir -p 0
+cp 0.org/PO2.org              0/PO2
+cp 0.org/C.org                0/C
+cp 0.org/U.org                0/U
+cp 0.org/in_tissue.org        0/in_tissue
+cp 0.org/alpha_no_RBC.org     0/alpha_no_RBC
+cp 0.org/kappa_O2_no_RBC.org  0/kappa_O2_no_RBC
+cp 0.org/meshPhi.org          0/meshPhi
+cd ..
+
+# create mesh
+runApplication blockMesh -case $eulerCaseDir
+mv log.blockMesh log.blockMesh.$eulerCaseDir
+runApplication checkMesh -case $eulerCaseDir
+mv log.checkMesh log.checkMesh.$eulerCaseDir
+
+# Generate sets for capillary, wall and tissue
+runApplication topoSet "-case" $eulerCaseDir
+mv log.topoSet log.topoSet.domain
+
+# Set fields for alpha, kappa_O2, U, in_tissue
+runApplication setFields "-case" $eulerCaseDir
+mv log.setFields log.setFields.domain

@@ -1,0 +1,4 @@
+Command to test the utility:
+
+concatenateRBCPaths -outputFile RBCPaths -fileNames "(RBCPaths1 RBCPaths2 RBCPaths3)"
+

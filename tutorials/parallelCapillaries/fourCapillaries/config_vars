@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source $WM_PROJECT_DIR/bin/tools/RunFunctions
+source $OF_SCRIPTS/bash/myRunFunctions
+
+isParallel=1
+refineMesh=1
+
+eulerCaseDir="domain"
+RBCSourceDir="RBCSource"
+sampleRBCDir="sampleRBC"
+RBCCaseDir="RBC"
+
+cd $eulerCaseDir
+startTime=`getStartTime`
+nProcs=`getNumberOfProcessors`
+cd ..
+
+if [[ $isParallel == "1" ]]; then
+    pFlag="--parallel"
+elif [[ $isParallel == "0" ]]; then
+    pFlag=""
+else
+    echo "Wrong value of flag 'isParallel'"
+    return 1
+fi
+

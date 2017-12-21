@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# Add an axisymmetric case to git
+#
+
+source config_vars
+
+# add scripts
+git add Allrun cleanCase makeLinks prepareEulerianCase createRBCMesh removeLinks runCase
+
+# add files in root directory
+git add config_vars initialConditions simParams.json geometricData
+if test -n "$(find . -maxdepth 1 -name '*.stl' -print -quit)"; then
+    git add *.stl
+fi
+
+# add files in domain
+cd $eulerCaseDir
+git add 0.org *.foam
+git add constant/transportProperties constant/polyMesh/blockMeshDict
+git add constant/geometricProperties
+git add system/controlDict system/fvS*
+git add system/setFieldsDict system/topoSetDict system/RBCMoverDict
+git add system/decomposeParDict
+cd system
+if test -n "$(find . -maxdepth 1 -name 'singleGraph*' -print -quit)"; then
+    git add singleGraph*
+fi
+cd ../..
+
+# add files in sampleRBC, if present
+if [[ -n $sampleRBCDir ]] && [[ -d $sampleRBCDir ]]; then
+    cd $sampleRBCDir
+    git add *.foam
+    git add constant/polyMesh/blockMeshDict
+    git add constant/RBCBaseGeometricState
+    git add system/controlDict system/fv*
+    cd ..
+fi
+
+# add files in RBC directory
+cd $RBCCaseDir
+git add 0.org *.foam
+git add system/controlDict system/fv* system/decomposeParDict
+git add constant/polyMesh
+cd ..
+

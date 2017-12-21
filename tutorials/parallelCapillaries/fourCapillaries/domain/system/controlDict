@@ -1,0 +1,190 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     hbPOGraphFoam;
+
+startFrom       startTime;
+
+startTime       0.2;
+
+stopAt          endTime;
+
+endTime         3;
+
+deltaT          1e-3;
+
+writeControl    runTime;
+
+writeInterval   1e-2;
+
+purgeWrite      10;
+
+writeFormat     binary;
+
+writePrecision  8;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+libs
+(
+    "libfiniteVolume.so"
+    "libgraph.so"
+);
+
+
+DebugSwitches
+{
+    vascularGraphRegions   1;
+    circularTubeGraph      0;
+    graphVelocityEngine    1;
+    RBCCollection          1;
+    regionAddRemoveFvMesh  0;
+    RBCPathMover           1;
+    meshToMeshMethod       0;
+    meshToMeshMoving       0;
+} 
+
+
+functions
+{
+    HbProbes
+    {
+        type        RBCProbe;
+        functionObjectLibs  ("libmyFunctionObjects.so");
+        graphName   graphDict;
+        field       Hb;
+        sampleGraphCoords
+        ( 
+            (0  11.0e-6) 
+            (0 109.0e-6) 
+            (1  11.0e-6) 
+            (1 109.2e-6) 
+            (2  11.0e-6) 
+            (2 109.0e-6) 
+            (3  11.0e-6) 
+            (3 109.0e-6) 
+        );
+    }
+
+    sampleRBCHb
+    {
+        type        sampleRBCField;
+        functionObjectLibs  ("libmyFunctionObjects.so");
+        graphName   graphDict;
+        field       Hb;
+    }
+
+    steadyStateFields
+    {
+        type            fieldAverage;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        writeControl    writeTime;
+        timeStart       2.0;
+
+        fields
+        (
+            PO2
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+
+            Hb_euler
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+
+            in_RBC_euler
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+        );
+    }
+
+    minMax
+    {
+        type            fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        log             true;
+        write           true;
+
+        fields
+        (
+            PO2
+            Hb_euler
+        );
+    }
+
+    probesMidstream
+    {
+        type probes;
+        functionObjectLibs ("libsampling.so");
+        enabled         true;
+        writeControl    timeStep;
+        writeInterval   1;
+
+        probeLocations
+        (
+            (50e-6  90e-6 50e-6)
+            (50e-6  80e-6 50e-6)
+            (50e-6  70e-6 50e-6)
+            (50e-6  60e-6 50e-6)
+            (50e-6  50e-6 50e-6)
+            (50e-6  40e-6 50e-6)
+            (50e-6  30e-6 50e-6)
+            (50e-6  20e-6 50e-6)
+            (50e-6  10e-6 50e-6)
+        );
+
+        fields
+        (
+            PO2
+        );
+    };
+
+    volumeAverages
+    {
+        type            volumeAverage;
+        functionObjectLibs ("libsimpleSwakFunctionObjects.so");
+        verbose         true;
+        fields
+        (
+            PO2
+        );
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+}
+
+
+// ************************************************************************* //
+

@@ -1,0 +1,13 @@
+{
+    "postprocessing": [
+        {
+            "type": "hemoglobinOnSegments",
+            "fieldName": "Hb_mean",
+            "averagingMode": "timeStart",
+            "averagingStart": 39,
+            "RBCRadiusFactor": 0.8,
+            "RBCRadiusMin": 1.5e-6,
+            "wallRadiusFactor": 1.25
+        }
+    ]
+}

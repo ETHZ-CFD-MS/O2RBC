@@ -1,0 +1,32 @@
+#!/bin/bash
+
+source config_vars
+
+ln -s ../../$RBCCaseDir/$startTime       $eulerCaseDir/$startTime/$RBCCaseDir
+ln -s ../../$RBCCaseDir/constant         $eulerCaseDir/constant/$RBCCaseDir
+ln -s ../../$RBCCaseDir/system           $eulerCaseDir/system/$RBCCaseDir
+
+for ((i=0; i<${#sampleRBCDirs[*]}; i++));
+do
+    ln -s ../../$RBCSourceDir/constant/${RBCSourceRegions[i]} \
+          $eulerCaseDir/constant/${sampleRBCDirs[i]}
+    ln -s ../../$RBCSourceDir/system $eulerCaseDir/system/${sampleRBCDirs[i]}
+done
+
+#- Parallel links:
+if [[ $isParallel == "1" ]]; then
+    echo "Making parallel links"
+    cd $eulerCaseDir
+    for proc in processor* ; do
+        ln -s ../../../$RBCCaseDir/$proc/$startTime $proc/$startTime/$RBCCaseDir
+        ln -s ../../../$RBCCaseDir/$proc/constant   $proc/constant/$RBCCaseDir
+
+        for ((i=0; i<${#sampleRBCDirs[*]}; i++));
+        do
+            ln -s ../../../$RBCSourceDir/constant/${RBCSourceRegions[i]} \
+                  $proc/constant/${sampleRBCDirs[i]}
+            ln -s ../../../$RBCSourceDir/system $proc/system/${sampleRBCDirs[i]}
+        done
+    done
+    cd ..
+fi

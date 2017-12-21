@@ -1,0 +1,5 @@
+dissociationCurve/dissociationCurve/dissociationCurve.C
+dissociationCurve/dissociationCurveHill/dissociationCurveHill.C
+
+LIB = $(FOAM_USER_LIBBIN)/libbloodChemistry
+

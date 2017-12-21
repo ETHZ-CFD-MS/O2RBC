@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source $WM_PROJECT_DIR/bin/tools/RunFunctions
+source $OF_SCRIPTS/bash/myRunFunctions
+
+isParallel=0
+
+eulerCaseDir="domain"
+RBCSourceDir="RBCSource"
+sampleRBCDir="sampleRBC"
+RBCCaseDir="RBC"
+
+cd $eulerCaseDir
+startTime=`getStartTime`
+cd ..
+

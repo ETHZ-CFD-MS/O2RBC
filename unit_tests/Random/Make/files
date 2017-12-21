@@ -1,0 +1,4 @@
+testRandom.C
+
+EXE = ./testRandom
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source config_vars
+
+edgeVelocityURL="https://www.zenodo.org/record/1098250/files/twoLevelTree3D_edgeVelocities.gz"
+RBCPathURL="https://www.zenodo.org/record/1098250/files/twoLevelTree3D_RBCPaths.gz"
+
+edgeVelocityPath="$eulerCaseDir/constant/edgeVelocities.gz"
+RBCPathsPath="$eulerCaseDir/constant/RBCPaths.gz"
+
+if [ ! -f $edgeVelocityPath ]; then
+    wget $edgeVelocityURL -O $edgeVelocityPath
+fi
+if [ ! -f $RBCPathsPath ]; then
+    wget $RBCPathURL -O $RBCPathsPath
+fi

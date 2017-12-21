@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cp 0.org/U.org 0/U
+cp 0.org/f.org 0/f
+
+rm 0/phi 0/psi
+
+blockMesh
+checkMesh
+
+topoSet
+setFields
+
+./testDivergenceFreeProj
+

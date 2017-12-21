@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source config_vars
+
+ln -s ../../$RBCCaseDir/$startTime       $eulerCaseDir/$startTime/$RBCCaseDir
+ln -s ../../$RBCCaseDir/constant         $eulerCaseDir/constant/$RBCCaseDir
+ln -s ../../$RBCCaseDir/system           $eulerCaseDir/system/$RBCCaseDir
+
+ln -s ../../$sampleRBCDir/constant       $eulerCaseDir/constant/$sampleRBCDir
+ln -s ../../$sampleRBCDir/system         $eulerCaseDir/system/$sampleRBCDir
+
+ln -s ../../$sampleRBCDir/constant/RBCBaseGeometricState $eulerCaseDir/constant
+
+#- Parallel links:
+if [[ $isParallel == "1" ]]; then
+    echo "Making parallel links"
+    cd $eulerCaseDir
+    for proc in processor* ; do
+        ln -s ../../../$RBCCaseDir/$proc/$startTime $proc/$startTime/$RBCCaseDir
+        ln -s ../../../$RBCCaseDir/$proc/constant   $proc/constant/$RBCCaseDir
+
+        ln -s ../../$sampleRBCDir/constant          $proc/constant/$sampleRBCDir
+    done
+    cd ..
+fi

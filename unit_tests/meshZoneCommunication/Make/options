@@ -1,0 +1,10 @@
+EXE_INC = \
+    -Wno-old-style-cast \
+    -Wno-unused-local-typedefs \
+    -DFULLDEBUG -g -O0 \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume
+

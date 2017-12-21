@@ -1,0 +1,29 @@
+PO2Tissue           32.0;    // [-], PO2 value in the tissue at the beginning of the simulation
+PO2Plasma           40.0;    // [-], PO2 value in the plasma around RBCs at the beginning of the simulation and at the plasma inlet
+CPlasma             1128;    // [-], C_O2 value in the plasma around RBCs at the beginning of the simulation and at the plasma inlet
+PO2RBCInlet         90.0;    // [-], inlet PO2 value in RBCs
+PO2RBCInit          55.0;    // [-], initial PO2 value in RBCs
+
+P50                 47.9;    // [mmHg]
+hillExponent        2.64;    // [-]
+dissociationRate    44.0;    // [s^-1], see Eggleton, 2000
+NHb                 2.03e1;  // [mol m^-3], molar concentration of Hb in RBCs, see Eggleton, 2000
+VMolO2              2.544e4; // [mlO2 molO2^-1], from perfect gas law at 36.9 degrees Celsius
+O2ConsumptionRate   2000;    // [mlO2 m^-3 s^-1], fitted
+PO2Crit             1.0;     // [mmHg], critical PO2 for consumption term, see McGuire, 2001
+RBCVolume           59e-18;  // [m^3], RBC volume
+halfRBCVolume       29.5e-18;// [m^3]
+
+kappaHb             1.44e-11;// [m^2 s^-1], see Eggleton, 2000
+
+kappaO2RBC          9.5e-10; // [m^2 s^-1], see Eggleton, 2000
+kappaO2Plasma       2.18e-9; // [m^2 s^-1], see Eggleton, 2000
+kappaO2Wall         8.73e-10;// [m^2 s^-1], see Eggleton, 2000
+kappaO2Tissue       2.41e-9; // [m^2 s^-1], see Eggleton, 2000
+
+alphaRBC            33.8;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+alphaPlasma         28.2;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+alphaWall           38.9;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+alphaTissue         38.9;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+
+#inputMode merge

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+# replace initial fields
+cd $eulerCaseDir
+mkdir -p $startTime/uniform
+cp 0.org/PO2.org           $startTime/PO2
+cp 0.org/C.org             $startTime/C
+cp 0.org/alphaNoRBC.org    $startTime/alphaNoRBC
+cp 0.org/inTissue.org      $startTime/inTissue
+cp 0.org/kappaO2NoRBC.org  $startTime/kappaO2NoRBC
+cp 0.org/RBCCollection.org $startTime/uniform/RBCCollection
+cd ..
+
+# create domain mesh
+myRunApplication blockMesh -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication checkMesh -s $eulerCaseDir -case $eulerCaseDir
+
+# decompose domain
+if [[ $isParallel == "1" ]]; then
+    myRunApplication decomposePar -s $eulerCaseDir -case $eulerCaseDir
+fi
+
+myRunApplication topoSet $pFlag -np $nProcs -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication setsToZones $pFlag -np $nProcs -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication setFields $pFlag -np $nProcs -s $eulerCaseDir -case $eulerCaseDir

@@ -1,0 +1,101 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      singleGraph.x_axis;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+type            sets;
+libs            ("libsampling.so");
+
+fields          ( PO2Mean );
+
+setConfig
+{
+    type    uniform;
+    axis    x;
+    nPoints 200;
+}
+
+interpolationScheme cellPointFace;
+
+setFormat   raw;
+
+writeControl    writeTime;
+
+sets
+(
+    tissueProbes
+    {
+        type    cloud;
+        axis    x;
+        points
+        (
+            (   0e-6 17.6e-6 0 )
+            (  10e-6 17.6e-6 0 )
+            (  20e-6 17.6e-6 0 )
+            (  30e-6 17.6e-6 0 )
+            (  40e-6 17.6e-6 0 )
+            (  50e-6 17.6e-6 0 )
+            (  60e-6 17.6e-6 0 )
+            (  70e-6 17.6e-6 0 )
+            (  80e-6 17.6e-6 0 )
+            (  90e-6 17.6e-6 0 )
+            ( 100e-6 17.6e-6 0 )
+        );
+    }
+    centerline
+    {
+        $setConfig;
+        start   (  0.0000000e+00  1e-07  0 );
+        end     (  1.0000000e-04  1e-07  0 );
+    }
+
+    wall
+    {
+        $setConfig;
+        start   (  0.0000000e+00  2.6e-06  0 );
+        end     (  1.0000000e-04  2.6e-06  0 );
+    }
+    
+    nearWall
+    {
+        $setConfig;
+        start   (  0.0000000e+00  3.6e-06  0 );
+        end     (  1.0000000e-04  3.6e-06  0 );
+    }
+
+    fiveMuFromWall
+    {
+        $setConfig;
+        start   (  0.0000000e+00  7.6e-06  0 );
+        end     (  1.0000000e-04  7.6e-06  0 );
+    }
+
+    tenMuFromWall
+    {
+        $setConfig;
+        start   (  0.0000000e+00  1.26e-05  0 );
+        end     (  1.0000000e-04  1.26e-05  0 );
+    }
+
+    tissueExterior
+    {
+        $setConfig;
+        start   (  0.0000000e+00  1.76e-05  0 );
+        end     (  1.0000000e-04  1.76e-05  0 );
+    }
+);
+
+
+// ************************************************************************* //

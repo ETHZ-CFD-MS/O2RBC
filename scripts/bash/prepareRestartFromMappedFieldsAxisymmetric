@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+usage() { echo "Usage: $0 [-c] [-s <sourceDir>]" 1>&2; exit 1; }
+
+getLastTime()
+{
+    caseName=$1
+    cd $1/domain
+    # ls -d [0-9]* | tail -n 1
+    find * -maxdepth 0 -type d -name "[0-9]*" ! -name 0.org | tail -n 1
+
+}
+
+consistentFlag=""
+while getopts ":cs:" o; do
+    case "${o}" in
+        s)
+            sourceCase=${OPTARG}
+            ;;
+        c)
+            consistentFlag="-consistent"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+         
+if [ ! -d "$sourceCase" ]; then
+    echo "Directory $sourceCase does not exist."
+    echo ""
+    usage
+fi
+
+lastTime=`getLastTime $sourceCase`
+
+prepareEulerianCase.py
+./removeLinks
+./cleanCase
+./prepareEulerianCase
+./prepareLagrangianCases
+./makeLinks
+
+rm -r $eulerCaseDir/0/RBC*
+rm -r $eulerCaseDir/0/lagrangian*
+cp -r $sourceCase/$eulerCaseDir/$lastTime/RBC* $eulerCaseDir/0/
+cp -r $sourceCase/$eulerCaseDir/$lastTime/lagrangian* $eulerCaseDir/0/
+
+# map fields
+myRunApplication mapFields -case $eulerCaseDir $consistentFlag \
+    -sourceTime $lastTime $sourceCase/$eulerCaseDir
+

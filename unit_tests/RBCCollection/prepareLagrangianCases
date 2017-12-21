@@ -1,0 +1,33 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+source config_vars
+
+################################################
+# Adapt RBC case
+################################################
+
+# Copy fields to 0 directory
+cd $RBCBaseCaseDir
+mkdir -p 0
+cp 0.org/Hb.org        0/Hb
+cp 0.org/PO2_RBC.org   0/PO2_RBC
+cp 0.org/in_RBC.org    0/in_RBC
+cp 0.org/meshPhi.org   0/meshPhi
+cp 0.org/geometry.org  0/geometry
+cd ..
+
+# Copy mesh from lagrangian case
+mkdir -p $RBCBaseCaseDir/constant/polyMesh
+cp -r $lagBaseCaseDir/constant/RBC/polyMesh/* $RBCBaseCaseDir/constant/polyMesh
+
+# Copy RBC.org to RBC0, RBC1, RBC2 etc.
+i=0
+while [ $i -lt "$N_rbc" ]; do
+    # Copy RBC base case
+    cp -r $RBCBaseCaseDir ${RBCDirs[$i]}
+
+    let "i++"
+done
+

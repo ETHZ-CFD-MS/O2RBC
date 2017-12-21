@@ -1,0 +1,532 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "piecewiseConstantInterpolationTable.H"
+#include "IFstream.H"
+
+// * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * //
+
+template<class Type>
+void Foam::piecewiseConstantInterpolationTable<Type>::readTable()
+{
+    // preserve the original (unexpanded) fileName to avoid absolute paths
+    // appearing subsequently in the write() method
+    fileName fName(fileName_);
+
+    fName.expand();
+
+    // Read data from file
+    IFstream(fName)() >> *this;
+
+    if (this->empty())
+    {
+        FatalErrorIn
+        (
+            "Foam::piecewiseConstantInterpolationTable<Type>::readTable()"
+        )   << "table read from " << fName << " is empty" << nl
+            << exit(FatalError);
+    }
+
+    // Check that the data are okay
+    check();
+}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+template<class Type>
+Foam::piecewiseConstantInterpolationTable<Type>::
+piecewiseConstantInterpolationTable()
+:
+    List<Tuple2<scalar, Type> >(),
+    boundsHandling_(piecewiseConstantInterpolationTable::WARN),
+    fileName_("fileNameIsUndefined")
+{}
+
+
+template<class Type>
+Foam::piecewiseConstantInterpolationTable<Type>::piecewiseConstantInterpolationTable
+(
+    const List<Tuple2<scalar, Type> >& values,
+    const typename piecewiseConstantInterpolationTable<Type>::boundsHandling bounds,
+    const fileName& fName
+)
+:
+    List<Tuple2<scalar, Type> >(values),
+    boundsHandling_(bounds),
+    fileName_(fName)
+{}
+
+
+template<class Type>
+Foam::piecewiseConstantInterpolationTable<Type>::
+piecewiseConstantInterpolationTable(const fileName& fName)
+:
+    List<Tuple2<scalar, Type> >(),
+    boundsHandling_(piecewiseConstantInterpolationTable::WARN),
+    fileName_(fName)
+{
+    readTable();
+}
+
+
+template<class Type>
+Foam::piecewiseConstantInterpolationTable<Type>::
+piecewiseConstantInterpolationTable(const dictionary& dict, const word& key)
+: 
+    List<Tuple2<scalar, Type> >(),
+    boundsHandling_(piecewiseConstantInterpolationTable::WARN),
+    fileName_()
+{
+    dict.lookup(key) >> *this;
+}
+
+
+template<class Type>
+Foam::piecewiseConstantInterpolationTable<Type>::
+piecewiseConstantInterpolationTable(const dictionary& dict)
+: 
+    List<Tuple2<scalar, Type> >(),
+    boundsHandling_(wordToBoundsHandling(dict.lookup("outOfBounds"))),
+    fileName_(dict.lookup("fileName"))
+{
+    readTable();
+}
+
+
+template<class Type>
+Foam::piecewiseConstantInterpolationTable<Type>::piecewiseConstantInterpolationTable
+(
+     const piecewiseConstantInterpolationTable& interpTable
+)
+:
+    List<Tuple2<scalar, Type> >(interpTable),
+    boundsHandling_(interpTable.boundsHandling_),
+    fileName_(interpTable.fileName_)
+{}
+
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+template<class Type>
+Foam::word Foam::piecewiseConstantInterpolationTable<Type>::
+boundsHandlingToWord
+(
+     const boundsHandling& bound
+) const
+{
+    word enumName("warn");
+
+    switch (bound)
+    {
+        case piecewiseConstantInterpolationTable::ERROR:
+        {
+            enumName = "error";
+            break;
+        }
+        case piecewiseConstantInterpolationTable::WARN:
+        {
+            enumName = "warn";
+            break;
+        }
+        case piecewiseConstantInterpolationTable::CLAMP:
+        {
+            enumName = "clamp";
+            break;
+        }
+        case piecewiseConstantInterpolationTable::REPEAT:
+        {
+            enumName = "repeat";
+            break;
+        }
+    }
+
+    return enumName;
+}
+
+
+template<class Type>
+typename Foam::piecewiseConstantInterpolationTable<Type>::boundsHandling
+Foam::piecewiseConstantInterpolationTable<Type>::wordToBoundsHandling
+(
+    const word& bound
+) const
+{
+    if (bound == "error")
+    {
+        return piecewiseConstantInterpolationTable::ERROR;
+    }
+    else if (bound == "warn")
+    {
+        return piecewiseConstantInterpolationTable::WARN;
+    }
+    else if (bound == "clamp")
+    {
+        return piecewiseConstantInterpolationTable::CLAMP;
+    }
+    else if (bound == "repeat")
+    {
+        return piecewiseConstantInterpolationTable::REPEAT;
+    }
+    else
+    {
+        WarningIn
+        (
+            "Foam::piecewiseConstantInterpolationTable<Type>::"
+            "wordToBoundsHandling(const word&)"
+        )   << "bad outOfBounds specifier " << bound << " using 'warn'" << endl;
+
+        return piecewiseConstantInterpolationTable::WARN;
+    }
+}
+
+
+template<class Type>
+typename Foam::piecewiseConstantInterpolationTable<Type>::boundsHandling
+Foam::piecewiseConstantInterpolationTable<Type>::outOfBounds
+(
+    const boundsHandling& bound
+)
+{
+    boundsHandling prev = boundsHandling_;
+    boundsHandling_ = bound;
+    return prev;
+}
+
+
+template<class Type>
+void Foam::piecewiseConstantInterpolationTable<Type>::check() const
+{
+    label n = this->size();
+    scalar prevValue = List<Tuple2<scalar, Type> >::operator[](0).first();
+
+    for (label i=1; i<n; ++i)
+    {
+        const scalar currValue =
+            List<Tuple2<scalar, Type> >::operator[](i).first();
+
+        // avoid duplicate values (divide-by-zero error)
+        if (currValue <= prevValue)
+        {
+            FatalErrorIn
+            (
+                "Foam::piecewiseConstantInterpolationTable<Type>::checkOrder() const"
+            )   << "out-of-order value: "
+                << currValue << " at index " << i << nl
+                << exit(FatalError);
+        }
+        prevValue = currValue;
+    }
+}
+
+
+template<class Type>
+void Foam::piecewiseConstantInterpolationTable<Type>::write(Ostream& os) const
+{
+    os.writeKeyword("fileName")
+        << fileName_ << token::END_STATEMENT << nl;
+    os.writeKeyword("outOfBounds")
+        << boundsHandlingToWord(boundsHandling_) << token::END_STATEMENT << nl;
+}
+
+
+template<class Type>
+Type Foam::piecewiseConstantInterpolationTable<Type>::
+rateOfChange(const scalar value) const
+{
+    return 0;
+}
+
+
+template<class Type>
+bool Foam::piecewiseConstantInterpolationTable<Type>::valueChanged
+(
+    const scalar value1,
+    const scalar value2
+) const
+{
+    if (value1 == value2)
+    {
+        return false;
+    }
+
+    scalar t1 = value1;
+    scalar t2 = value2;
+
+    // Ensure that value1 < value2
+    if (t1 > t2)
+    {
+        scalar tmp = t1;
+        t1 = t2;
+        t2 = tmp;
+    }
+
+    for (label i = 0; i < this->size(); ++i)
+    {
+        if (t1 < List<Tuple2<scalar, Type> >::operator[](i).first()
+        &&       List<Tuple2<scalar, Type> >::operator[](i).first() <= t2)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
+
+template<class Type>
+const Foam::Tuple2<Foam::scalar, Type>&
+Foam::piecewiseConstantInterpolationTable<Type>::operator[](const label i) const
+{
+    label ii = i;
+    label n  = this->size();
+
+    if (n <= 1)
+    {
+        ii = 0;
+    }
+    else if (ii < 0)
+    {
+        switch (boundsHandling_)
+        {
+            case piecewiseConstantInterpolationTable::ERROR:
+            {
+                FatalErrorIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const label) const"
+                )   << "index (" << ii << ") underflow" << nl
+                    << exit(FatalError);
+                break;
+            }
+            case piecewiseConstantInterpolationTable::WARN:
+            {
+                WarningIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const label) const"
+                )   << "index (" << ii << ") underflow" << nl
+                    << "    Continuing with the first entry"
+                    << endl;
+                // fall-through to 'CLAMP'
+            }
+            case piecewiseConstantInterpolationTable::CLAMP:
+            {
+                ii = 0;
+                break;
+            }
+            case piecewiseConstantInterpolationTable::REPEAT:
+            {
+                while (ii < 0)
+                {
+                    ii += n;
+                }
+                break;
+            }
+        }
+    }
+    else if (ii >= n)
+    {
+        switch (boundsHandling_)
+        {
+            case piecewiseConstantInterpolationTable::ERROR:
+            {
+                FatalErrorIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const label) const"
+                )   << "index (" << ii << ") overflow" << nl
+                    << exit(FatalError);
+                break;
+            }
+            case piecewiseConstantInterpolationTable::WARN:
+            {
+                WarningIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const label) const"
+                )   << "index (" << ii << ") overflow" << nl
+                    << "    Continuing with the last entry"
+                    << endl;
+                // fall-through to 'CLAMP'
+            }
+            case piecewiseConstantInterpolationTable::CLAMP:
+            {
+                ii = n - 1;
+                break;
+            }
+            case piecewiseConstantInterpolationTable::REPEAT:
+            {
+                while (ii >= n)
+                {
+                    ii -= n;
+                }
+                break;
+            }
+        }
+    }
+
+    return List<Tuple2<scalar, Type> >::operator[](ii);
+}
+
+
+template<class Type>
+Type Foam::piecewiseConstantInterpolationTable<Type>::
+operator()(const scalar value) const
+{
+    label n = this->size();
+
+    if (n <= 1)
+    {
+        return List<Tuple2<scalar, Type> >::operator[](0).second();
+    }
+
+    scalar minLimit = List<Tuple2<scalar, Type> >::operator[](0).first();
+    scalar maxLimit = List<Tuple2<scalar, Type> >::operator[](n-1).first();
+    scalar lookupValue = value;
+
+    if (lookupValue < minLimit)
+    {
+        switch (boundsHandling_)
+        {
+            case piecewiseConstantInterpolationTable<Type>::ERROR:
+            {
+                FatalErrorIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const scalar) const"
+                )   << "value (" << lookupValue << ") underflow" << nl
+                    << exit(FatalError);
+                break;
+            }
+            case piecewiseConstantInterpolationTable<Type>::WARN:
+            {
+                WarningIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const scalar) const"
+                )   << "value (" << lookupValue << ") underflow" << nl
+                    << "    Continuing with the first entry"
+                    << endl;
+                // fall-through to 'CLAMP'
+            }
+            case piecewiseConstantInterpolationTable<Type>::CLAMP:
+            {
+                return List<Tuple2<scalar, Type> >::operator[](0).second();
+                break;
+            }
+            case piecewiseConstantInterpolationTable<Type>::REPEAT:
+            {
+                // adjust lookupValue to >= minLimit
+                scalar span = maxLimit-minLimit;
+                lookupValue = fmod(lookupValue-minLimit, span) + minLimit;
+                break;
+            }
+        }
+    }
+    else if (lookupValue >= maxLimit)
+    {
+        switch (boundsHandling_)
+        {
+            case piecewiseConstantInterpolationTable<Type>::ERROR:
+            {
+                FatalErrorIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const label) const"
+                )   << "value (" << lookupValue << ") overflow" << nl
+                    << exit(FatalError);
+                break;
+            }
+            case piecewiseConstantInterpolationTable<Type>::WARN:
+            {
+                WarningIn
+                (
+                    "Foam::piecewiseConstantInterpolationTable<Type>::operator[]"
+                    "(const label) const"
+                )   << "value (" << lookupValue << ") overflow" << nl
+                    << "    Continuing with the last entry"
+                    << endl;
+                // fall-through to 'CLAMP'
+            }
+            case piecewiseConstantInterpolationTable<Type>::CLAMP:
+            {
+                return List<Tuple2<scalar, Type> >::operator[](n-1).second();
+                break;
+            }
+            case piecewiseConstantInterpolationTable<Type>::REPEAT:
+            {
+                // adjust lookupValue <= maxLimit
+                scalar span = maxLimit-minLimit;
+                lookupValue = fmod(lookupValue-minLimit, span) + minLimit;
+                break;
+            }
+        }
+    }
+
+    label lo = 0;
+    label hi = 0;
+
+    // look for the correct range
+    for (label i = 0; i < n; ++i)
+    {
+        if (lookupValue >= List<Tuple2<scalar, Type> >::operator[](i).first())
+        {
+            lo = hi = i;
+        }
+        else
+        {
+            hi = i;
+            break;
+        }
+    }
+
+    if (lo == hi)
+    {
+        // we are at the end of the table - or there is only a single entry
+        return List<Tuple2<scalar, Type> >::operator[](hi).second();
+    }
+    else if (hi == 0)
+    {
+        // this treatment should should only occur under these conditions:
+        //  -> the 'REPEAT' treatment
+        //  -> (0 <= value <= minLimit)
+        //  -> minLimit > 0
+        // Use the value at maxLimit as the value for value=0
+        lo = n - 1;
+
+        return List<Tuple2<scalar, Type> >::operator[](lo).second();
+    }
+    else
+    {
+        // use the preceding value
+        return List<Tuple2<scalar, Type> >::operator[](lo).second();
+    }
+}
+
+
+// ************************************************************************* //

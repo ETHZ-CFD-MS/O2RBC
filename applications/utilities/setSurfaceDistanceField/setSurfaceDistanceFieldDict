@@ -1,0 +1,28 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      triSurfaceDistanceFunctionDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+file            "RBC_1mm_s.stl";
+threshold       6e-6;          // maximal distance from the surface for
+                               // function evaluation
+params          
+3 
+(
+29.3    // value away from surface
+13.0     // maximum amplitude of the Gaussian perturbation
+5e-7    // standard deviation of the Gaussian curve
+);

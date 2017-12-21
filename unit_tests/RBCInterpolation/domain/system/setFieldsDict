@@ -1,0 +1,74 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+// default values are for the plasma.
+defaultFieldValues
+(
+    volScalarFieldValue alpha_no_RBC     $alpha_plasma
+    volScalarFieldValue kappa_O2_no_RBC  $kappa_O2_plasma
+    volScalarFieldValue in_tissue        0
+);
+
+regions
+(
+    // ===================================================================== //
+    // capillary
+    // ===================================================================== //
+    cellToCell
+    {
+        set plasma;
+
+        fieldValues
+        (
+            volScalarFieldValue PO2      $PO2_plasma
+        );
+    }
+
+    // ===================================================================== //
+    // wall
+    // ===================================================================== //
+    cellToCell
+    {
+        set wall;
+
+        fieldValues
+        (
+            volScalarFieldValue alpha_no_RBC    $alpha_wall
+            volScalarFieldValue kappa_O2_no_RBC $kappa_O2_wall
+        );
+    }
+
+    // ===================================================================== //
+    // tissue
+    // ===================================================================== //
+    cellToCell
+    {   
+        set tissue;
+
+        fieldValues
+        (
+            volScalarFieldValue alpha_no_RBC     $alpha_tissue
+            volScalarFieldValue kappa_O2_no_RBC  $kappa_O2_tissue
+            volScalarFieldValue in_tissue        1
+        );
+    }
+);
+
+// ************************************************************************* //
+

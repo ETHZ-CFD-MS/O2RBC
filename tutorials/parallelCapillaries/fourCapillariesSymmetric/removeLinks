@@ -1,0 +1,28 @@
+#!/bin/bash
+
+source config_vars
+
+cd $eulerCaseDir
+
+rm -rf $startTime/$RBCCaseDir
+rm -rf constant/$RBCCaseDir
+rm -rf system/$RBCCaseDir
+
+for ((i=0; i<${#sampleRBCDirs[*]}; i++));
+do
+    rm -rf constant/${sampleRBCDirs[i]}
+    rm -rf system/${sampleRBCDirs[i]}
+done
+
+#- Parallel links:
+echo "Removing parallel links"
+for proc in processor* ; do
+    rm -rf $proc/$startTime/$RBCCaseDir
+    rm -rf $proc/constant/$RBCCaseDir
+
+    rm -rf $proc/$startTime/$sampleRBCDir
+    rm -rf $proc/constant/$sampleRBCDir
+done
+
+cd ..
+

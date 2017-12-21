@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+copyConstFieldsFirstToLast.py $pFlag
+
+myRunApplication computeTissueGraphRegions $pFlag -np $nProcs -case $eulerCaseDir
+
+# Create a directed graph (required by the ODE integration along the graph edges)
+writeGraphPickleFromPostProcessor.py --pickleName graphForIntegration.pkl
+
+postProcessHemoglobinGraph.py
+postProcessTissueVolumes.py > tissueVolumeResults.txt
+echo "Wrote tissue volume results to tissueVolumeResults.txt"
+
+plotHemoglobinGraphProfiles.py -a
+plotHemoglobinGraphWholePaths.py --settingsFile postprocessWholePaths.json

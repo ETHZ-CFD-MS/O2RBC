@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+// default values are for the plasma.
+defaultFieldValues
+(
+    volScalarFieldValue alphaNoRBC     $alphaPlasma
+    volScalarFieldValue kappaO2NoRBC   $kappaO2Plasma
+    volScalarFieldValue inTissue       0
+);
+
+regions
+(
+    cellToCell
+    {
+        set wall;
+
+        fieldValues
+        (
+            volScalarFieldValue alphaNoRBC      $alphaWall
+            volScalarFieldValue kappaO2NoRBC    $kappaO2Wall
+        );
+    }
+
+    cellToCell
+    {   
+        set tissue;
+
+        fieldValues
+        (
+            volScalarFieldValue alphaNoRBC      $alphaTissue
+            volScalarFieldValue kappaO2NoRBC    $kappaO2Tissue
+            volScalarFieldValue inTissue        1
+        );
+    }
+);
+
+// ************************************************************************* //
+

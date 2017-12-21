@@ -1,0 +1,28 @@
+#!/bin/bash
+
+source config_vars
+N_rbc=${#RBCDirs[@]}
+
+cd $eulerCaseDir
+
+i=0
+while [ $i -lt "$N_rbc" ]; do
+    # rm -r 0/${lagCaseDirs[$i]}
+    # rm -r constant/${lagCaseDirs[$i]}
+    # rm -r system/${lagCaseDirs[$i]}
+
+    rm -r 0/${RBCDirs[$i]}
+    rm -r constant/${RBCDirs[$i]}
+    rm -r system/${RBCDirs[$i]}
+let "i++"
+done
+
+# rm -r 0/lagrangian[0-9]*
+# rm -r constant/lagrangian[0-9]*
+# rm -r system/lagrangian[0-9]*
+rm -r 0/RBC[0-9]*
+rm -r constant/RBC[0-9]*
+rm -r system/RBC[0-9]*
+
+cd ..
+

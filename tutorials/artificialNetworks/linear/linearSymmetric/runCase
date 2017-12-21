@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+myRunApplication initializeHbPOGraph $pFlag -np $nProcs -case $eulerCaseDir | tee log.initializeHbPOGraph
+myRunApplication hbPOGraphFoam $pFlag -np $nProcs -case $eulerCaseDir| tee log.hbPOGraphFoam

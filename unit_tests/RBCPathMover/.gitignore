@@ -1,0 +1,7 @@
+testRBCPathMover
+
+domain/constant/RBC[0-9]*
+domain/system/RBC[0-9]*
+RBC[0-9]*
+
+callgrind.*

@@ -1,0 +1,28 @@
+EXE_INC = \
+    -Wno-old-style-cast \
+    -Wno-unused-local-typedefs \
+    -Wno-uninitialized \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(LIB_SRC)/dynamicFvMesh/lnInclude \
+    -I$(LIB_SRC)/dynamicMesh/lnInclude \
+    -I$(OF_CBF_SRC)/meshTools/lnInclude \
+    -I$(OF_CBF_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(OF_CBF_SRC)/RBCTools/lnInclude \
+    -I$(OF_CBF_SRC)/graph/lnInclude \
+    -I$(OF_CBF_SRC)/miscellaneous/lnInclude \
+    -I$(BOOST_INCLUDEDIR)
+
+LIB_LIBS = \
+    -lfiniteVolume \
+    -ldynamicFvMesh \
+    -ldynamicMesh \
+    -ltopoChangerFvMesh \
+    -L$(FOAM_USER_LIBBIN) \
+    -lRBCTools \
+    -lcustomMeshTools \
+    -lmyTopoChangerFvMesh \
+    -lgraph \
+    -lmiscellaneous
+

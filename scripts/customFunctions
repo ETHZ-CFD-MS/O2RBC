@@ -1,0 +1,121 @@
+# Save results from a run into a directory passed as argument
+saveResults()
+{
+    dir_name=$1
+    mkdir $dir_name
+
+    cp -r 0 $dir_name
+    mv [0-9].[0-9]* $dir_name
+    mv [1-9] $dir_name
+    mv swakExpression_* $dir_name
+    mv log.* $dir_name
+    cp *.foam $dir_name
+    cp -r constant $dir_name
+    cp -r system $dir_name
+    cp initialConditions $dir_name
+    cp geometricData $dir_name
+    if [ -f "multi_RBC_params.txt" ]; then
+        cp multi_RBC_params.txt $1
+    fi
+    count=`ls -1 samplePlots* 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then
+        mv samplePlots* $dir_name
+    fi
+    count=`ls -1 sets* 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then
+        mv sets* $dir_name
+    fi
+    count=`ls -1 *.png 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then
+        mv *.png $dir_name
+    fi
+}
+
+# Clone a case with supplementary files for PO2/Hb simulations.
+myCloneCase()
+{
+    . $WM_PROJECT_DIR/bin/tools/RunFunctions 
+
+    cloneCase $1 $2
+    cp $1/{initialConditions,geometricData,Allrun,Allclean} $2
+    cp $1/*.stl $2
+    cp -r $1/0.org $2
+    touch $2/$2.foam
+    cp $1/multi_RBC_params.txt $2
+    copyPvsm $1 $2
+
+    count=`ls -1 $1/*.py 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then
+        cp -av $1/*.py $2
+    fi
+}
+
+# Copies Paraview state files from a source directory to a
+# destination directory with changing the paths inside the
+# state file. This scripts assumes that .foam files
+# have the name they are contained in. That is, it always
+# looks like
+#
+# case_test1/case_test1.foam
+#
+# Syntax :
+# ./copyPvsm <source_folder> <destination_folder>
+copyPvsm()
+{
+    # find complete path of source folder
+    source_path=`(cd $1 && pwd)`
+    dest_path=`(cd $2 && pwd)`
+
+    # extract case names from source and destination folders
+    source_case_name=`basename $source_path`
+    dest_case_name=`basename $dest_path`
+
+    # find all state files in source directory
+    for pvsm_path in $1/*.pvsm
+    do
+        # extract file name from pvsm_file
+        pvsm_file=`basename $pvsm_path`
+
+        # substitute: 1) paths to *.foam files
+        #             2) case_name.foam
+        sed \
+            -e s="$source_path"="$dest_path"=g \
+            -e s="$source_case_name"="$dest_case_name"=g \
+            $pvsm_path > $2/$pvsm_file
+    done
+}
+
+# Change the size of the blockMeshDict used for PO2 simulations
+# with one RBC.
+# 
+# Usage:
+# changeMeshSize <line_density> <tissue_radius> <dx> <dy> 
+#                <path to blockMeshDict.m4> <n_RBC>
+changeMeshSize()
+{
+    LHt=$1
+    Rt=$2
+    dx=${3:-"2.0e-7"} # grid cell width
+    dy=${4:-"2.5e-7"} # typical grid cell height
+    blockMeshDict=${5:-"constant/polyMesh/blockMeshDict.m4"}
+    n_RBC=${6:-"1"}
+
+    # parameters
+    L_rbc="8.3744e-6"
+
+    # computed values
+    domainHalfLength=`python -c "print $n_RBC*0.5*$L_rbc/$LHt"`
+    nx=`python -c "print int(round(2*$domainHalfLength/$dx))"`
+    ny=`python -c "print int(round($Rt/$dy))"`
+    nCells="($nx $ny 1)"
+
+    # replace entries in blockMeshDict.m4
+    sed -i \
+        -e s/"^\(define(L_HALF,\).*"/"\1 $domainHalfLength)"/g \
+        -e s/"^\(define(R,\).*"/"\1 $Rt)"/ \
+        -e s/"^\(\s*hex ([^)]*)\) ([^)]*)"/"\1 $nCells"/ \
+        $blockMeshDict
+
+    echo "Substituted L_HALF = $domainHalfLength and Rt = $Rt in $blockMeshDict"
+    echo "nx = $nx, ny = $ny"
+}

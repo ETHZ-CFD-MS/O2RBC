@@ -1,0 +1,22 @@
+meshToMeshMoving/meshToMeshMoving.C
+meshToMeshMoving/meshToMeshMovingParallelOps.C
+meshToMeshMethods = meshToMeshMoving/calcMethod
+$(meshToMeshMethods)/myMeshToMeshMethod/myMeshToMeshMethod.C
+$(meshToMeshMethods)/myMeshToMeshMethod/myMeshToMeshMethodNew.C
+$(meshToMeshMethods)/myCellVolumeWeightMethod/myCellVolumeWeightMethod.C
+$(meshToMeshMethods)/cellRelativeVolumeWeightMethod/cellRelativeVolumeWeightMethod.C
+
+meshToSubMesh/meshToSubMesh.C 
+
+deformableBodyGeometricState/deformableBodyGeometricState/deformableBodyGeometricState.C
+deformableBodyGeometricState/axisymmetricBodyGeometricState/axisymmetricBodyGeometricState.C
+
+regionProperties/regionProperties.C
+
+myTetOverlapVolume/myTetOverlapVolume.C
+triSurfaceDistanceFunction/triSurfaceDistanceFunction.C
+
+cartesianProcMeshInfo/cartesianProcMeshInfo.C
+
+LIB = $(FOAM_USER_LIBBIN)/libcustomMeshTools
+

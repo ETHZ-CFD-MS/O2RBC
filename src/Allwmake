@@ -1,0 +1,18 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+makeType=${1:-libso}
+
+wmake $makeType miscellaneous
+wmake $makeType meshTools
+wmake $makeType solutionControl
+wmake $makeType bloodChemistry
+
+wmake $makeType topoChangerFvMesh
+
+wmake $makeType graph
+
+wmake $makeType RBCTools
+
+wmake $makeType fvPatchField
+
+wmake $makeType postProcessing/functionObjects

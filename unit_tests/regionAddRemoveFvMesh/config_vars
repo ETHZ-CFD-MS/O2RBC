@@ -1,0 +1,4 @@
+eulerCaseDir="domain"
+RBCCaseDir="RBC"
+RBCDirs=("RBC0" "RBC1" "RBC2");
+sampleRBC="RBC"

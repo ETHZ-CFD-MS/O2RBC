@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Merges a series of RBCPaths and edgeVelocities files produced using VGMDict files.
+#
+# Usage:
+#     mergePathsAndVelocities <pathToVGMCase> <idxBackup1> <idxBackup2> ...
+# 
+# The script uses a series of pickles with names such as VGMDict_51.pkl, VGMDict_52.pkl,
+# where 51 and 52 are index suffixes to be given as arguments.
+
+if [[ $# -lt 2 ]]; then
+    echo "Usage:"
+    echo "mergePathsAndVelocities <pathToVGMCase> <idxBackup1> <idxBackup2> ..."
+    exit
+fi
+
+pathToVGMCase=$1
+shift
+backupIndices=$@
+
+if [[ ${#backupIndices[@]} -eq 0 ]]; then
+    echo "A list of backup numbers is required as an argument."
+    exit 1  
+fi
+if [[ ! -f domain/constant/_RBCPaths ]]; then
+    echo "A file _RBCPaths with a correct OpenFOAM header is required"
+    exit 1
+fi
+if [[ ! -f domain/constant/_edgeVelocities ]]; then
+    echo "A file _edgeVelocities with a correct OpenFOAM header is required."
+    exit 1
+fi
+if [[ ! -d $pathToVGMCase ]]; then
+    echo "The given path does not exist."
+    exit 1
+fi
+
+RBCPathsFileNames=()
+edgeVelocitiesFileNames=()
+
+for i in ${backupIndices[@]}; do
+    RBCPathsFileNames+=("RBCPaths$i")
+    edgeVelocitiesFileNames+=("edgeVelocities$i")
+    cp domain/constant/_RBCPaths domain/constant/RBCPaths
+    cp domain/constant/_edgeVelocities domain/constant/edgeVelocities
+    translateVGMData.py -f $pathToVGMCase/VGMDict_$i.pkl
+    rewriteIOdictionary -case domain -fileName RBCPaths
+    rewriteIOdictionary -case domain -fileName edgeVelocities
+    mv domain/constant/RBCPaths.gz domain/constant/RBCPaths$i.gz
+    mv domain/constant/edgeVelocities.gz domain/constant/edgeVelocities$i.gz
+done
+
+RBCPathsArgList="("${RBCPathsFileNames[@]}")"
+edgeVelocitiesArgList="("${edgeVelocitiesFileNames[@]}")"
+concatenateRBCPaths -case domain -outputFile RBCPaths -fileNames "$RBCPathsArgList"
+concatenateEdgeVelocities -case domain -outputFile edgeVelocities -fileNames "$edgeVelocitiesArgList"

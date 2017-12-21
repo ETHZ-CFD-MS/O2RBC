@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+./removeLinks
+
+
+./cleanCase >> log.cleanCase
+
+
+./prepareEulerianCase
+
+
+./createRBCMesh
+
+
+./makeLinks
+
+
+./runCase
+
+
+./postProcessCase

@@ -1,0 +1,54 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+if [ "$OF_CBF" = "" ]
+then
+    echo "Error: The environment variable OF_CBF is not set"
+    echo "    It should be set to the root folder of the O2RBC library"
+    exit 1
+fi
+
+if [ "$OF_CBF_SRC" = "" ]
+then
+    echo "Error: The environment variable OF_CBF_SRC is not set"
+    echo "    It should be set to \$OF_CBF/src"
+    exit 1
+fi
+
+if [ "$OF_SCRIPTS" = "" ]
+then
+    echo "Error: The environment variable OF_SCRIPTS is not set"
+    echo "    It should be set to \$OF_CBF/scripts"
+    exit 1
+fi
+
+wmakeCheckPwd "$OF_CBF" || {
+    echo "Error: Current directory is not \$OF_CBF"
+    echo "    The environment variables are inconsistent with the user directory layout."
+    echo "    Check the user OpenFOAM entries in your dot-files and source them."
+    exit 1
+}
+
+if [ "$BOOST_INCLUDEDIR" = "" ]
+then
+    echo "Error: The environment variable BOOST_INCLUDEDIR is not set"
+    echo "    This environment variable needs to be set for proper compilation."
+    echo "    If boost is included by default in your environment, set this variable"
+    echo "    to a dummy value."
+    exit 1
+fi
+
+if [ "$SWAK4FOAMDIR" = "" ]
+then
+    echo "Error: The environment variable SWAK4FOAMDIR is not set"
+    echo "    It should be set to the swak4foam library path."
+    exit 1
+fi
+
+src/Allwmake
+applications/Allwmake
+
+if [ "$1" = doc ]
+then
+    doc/Allwmake
+fi

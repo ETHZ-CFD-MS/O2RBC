@@ -1,0 +1,284 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     hbPOAxisymmetricFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime             2;
+
+deltaT              0.0003;
+
+writeControl    runTime;
+
+writeInterval   0.1;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  8;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+
+DebugSwitches
+{
+    RBCCollection          0;
+    regionAddRemoveFvMesh  0;
+    meshToMeshMethod       0;
+    meshToMeshMoving       0;
+    cellVolumeWeightMethod 0;
+    RBCVelocityDynamicElongationMover   1;
+} 
+
+libs 
+(
+    "libsimpleSwakFunctionObjects.so"
+);
+
+functions
+{
+    #includeFunc    singleGraph.x_axis
+    #includeFunc    singleGraph.y_axis
+
+    sampleRBCHb
+    {
+        type        sampleRBCFieldAxisymmetric;
+        functionObjectLibs  ("libmyFunctionObjects.so");
+        field       Hb;
+    }
+
+    steadyStateFields
+    {
+        type            fieldAverage;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        writeControl    writeTime;
+        timeStart           1;
+
+        fields
+        (
+            PO2
+            {
+                mean        on;
+                prime2Mean  on;
+                base        time;
+            }
+
+            HbEuler
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+
+            inRBCEuler
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+        );
+    }
+
+    minMax
+    {
+        type            fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        log             true;
+        write           true;
+
+        fields
+        (
+            PO2
+            HbEuler
+        );
+    }
+
+    probesMidstream
+    {
+        type probes;
+        functionObjectLibs ("libsampling.so");
+        enabled         true;
+        writeControl    timeStep;
+        writeInterval   1;
+
+        probeLocations
+        (
+            (50e-6 1e-7 0)
+            (50e-6 2.6e-6 0)
+            (50e-6 3.6e-6 0)
+            (50e-6 7.6e-6 0)
+            (50e-6 12.6e-6 0)
+            (50e-6 17.6e-6 0)
+        );
+
+        fields
+        (
+            PO2
+        );
+    };
+
+    probesTissuePO2
+    {
+        type probes;
+        functionObjectLibs ("libsampling.so");
+        enabled         true;
+        writeControl    timeStep;
+        writeInterval   1;
+
+        probeLocations
+        (
+            (10e-6 17.6e-6 0)
+            (30e-6 17.6e-6 0)
+            (50e-6 17.6e-6 0)
+            (70e-6 17.6e-6 0)
+            (90e-6 17.6e-6 0)
+        );
+
+        fields
+        (
+            PO2
+        );
+    };
+
+    PO2WallFace
+    {
+        type                swakExpression;
+        valueType           faceSet;
+        setName             wallOutFaces;
+        expression          "PO2";
+        autoInterpolate     true;
+        warnAutoInterpolate false;
+        accumulations (
+            average
+        );
+        verbose             false;
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+
+    O2FluxDensityWallOutCenter
+    {
+        type                swakExpression;
+        valueType           faceSet;
+        setName             wallOutFacesCenter;
+        expression          "-DalphaSurf*PO2Phi*flip()"; // [mlO2 m^2 s^-1]
+        accumulations (
+            average
+        );
+        verbose             false;
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+
+    PO2WallFaceCenter
+    {
+        type                swakExpression;
+        valueType           faceSet;
+        setName             wallOutFacesCenter;
+        expression          "PO2";
+        autoInterpolate     true;
+        warnAutoInterpolate false;
+        accumulations (
+            average
+        );
+        verbose             false;
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+
+    O2FluxDensityPlasmaOutCenter
+    {
+        type                swakExpression;
+        valueType           faceSet;
+        setName             plasmaOutFacesCenter;
+        expression          "-DalphaSurf*PO2Phi*flip()"; // [mlO2 m^2 s^-1]
+        accumulations (
+            average
+        );
+        verbose             false;
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+
+    PO2PlasmaOutFaceCenter
+    {
+        type                swakExpression;
+        valueType           faceSet;
+        setName             plasmaOutFacesCenter;
+        expression          "PO2";
+        autoInterpolate     true;
+        warnAutoInterpolate false;
+        accumulations (
+            average
+        );
+        verbose             false;
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+
+    volumeAverages
+    {
+        type                volumeAverage;
+        verbose             true;
+        fields
+        (
+            PO2
+        );
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+}
+
+
+// ************************************************************************* //
+

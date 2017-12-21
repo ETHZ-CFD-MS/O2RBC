@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      RBCPath;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+RBCPath111
+{
+    index     111;
+    times     3(6 7 8);
+    edges     3(1 2 3);
+    sCoords   3(0.1 0.3 0.7);
+}
+
+RBCPath333
+{
+    index     333;
+    times     3(6 7 8);
+    edges     3(1 2 3);
+    sCoords   3(0.1 0.3 0.7);
+}
+
+RBCPath444
+{
+    index     444;
+    times     3(6 7 8);
+    edges     3(1 2 3);
+    sCoords   3(0.1 0.3 0.7);
+}

@@ -1,0 +1,24 @@
+radiusCenterline    3e-07;
+radiusRBC           1.5e-06;
+radiusPlasma        2e-06;
+radiusWall          2.6e-06;
+radiusTissueLeft    2.3e-05;
+radiusTissueRight   2.3e-05;
+domainLength        0.0001;
+RBCVolume           5.9e-17;
+
+// dependent variables
+RBCLength           8.3467926e-06; // [m], RBC length
+RBCHalfLength       4.1733963e-06;
+RBCHalfLengthMinus  -4.1733963e-06;
+
+RBCMeshVolume       8.1944444e-19; // [m^3], RBC mesh volume (= 5/360*RBCVolume)
+
+radiusPlasmaMin     1.99e-06; // lower y-coordinate for the faceSet plasmaOutFacesCenter
+radiusWallMin       2.59e-06; // lower y-coordinate for the faceSet wallOutFaces
+
+MTCBoxXLeft         3.6088679e-05; // [m], left axial coordinate of the topoSet used for MTC computation
+MTCBoxXRight        6.3911321e-05; // [m], same, on the right
+
+#inputMode merge
+

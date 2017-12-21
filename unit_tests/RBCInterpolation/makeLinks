@@ -1,0 +1,30 @@
+#!/bin/bash
+
+source config_vars
+N_rbc=${#RBCDirs[@]}
+
+i=0
+while [ $i -lt "$N_rbc" ]; do
+    # ln -s ../../${lagCaseDirs[$i]}/0        $eulerCaseDir/0/${lagCaseDirs[$i]}
+    # ln -s ../../${lagCaseDirs[$i]}/constant $eulerCaseDir/constant/${lagCaseDirs[$i]}
+    # ln -s ../../${lagCaseDirs[$i]}/system   $eulerCaseDir/system/${lagCaseDirs[$i]}
+# 
+    # ln -s ../../${lagCaseDirs[$i]}/0/RBC         $eulerCaseDir/0/${RBCDirs[$i]}
+    # ln -s ../../${lagCaseDirs[$i]}/constant/RBC  $eulerCaseDir/constant/${RBCDirs[$i]}
+    # ln -s ../../${lagCaseDirs[$i]}/system/RBC    $eulerCaseDir/system/${RBCDirs[$i]}
+
+    ln -s ../../${RBCDirs[$i]}/0        $eulerCaseDir/0/${RBCDirs[$i]}
+    ln -s ../../${RBCDirs[$i]}/constant $eulerCaseDir/constant/${RBCDirs[$i]}
+    ln -s ../../${RBCDirs[$i]}/system   $eulerCaseDir/system/${RBCDirs[$i]}
+
+let "i++"
+done
+
+#- Parallel links:
+# cd $eulerCaseDir
+# foreach proc(processor*)
+# echo $proc
+# ln -s ../../../$lagCaseDir/$proc/0 $proc/0/RBC
+# ln -s ../../../$lagCaseDir/$proc/constant $proc/constant/RBC
+# end
+# cd ..

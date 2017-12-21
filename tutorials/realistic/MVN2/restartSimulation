@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+timestamp=$( date +%T )
+mv log.hbPOGraphFoam log.hbPOGraphFoam.$timestamp
+
+copyConstFieldsFirstToLast.py $pFlag
+myRunApplication hbPOGraphFoam $pFlag -np $nProcs -case $eulerCaseDir | tee log.hbPOGraphFoam

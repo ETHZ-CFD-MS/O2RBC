@@ -1,0 +1,10 @@
+ellipseAxes/ellipseAxes.C
+geometricOps/geometricOps.C
+randomVariable/randomVariable.C
+
+diameterFunction/diameterFunction/diameterFunction.C
+diameterFunction/diameterFunctionScalarFactor/diameterFunctionScalarFactor.C
+diameterFunction/diameterFunctionPries2005/diameterFunctionPries2005.C
+
+LIB = $(FOAM_USER_LIBBIN)/libmiscellaneous
+

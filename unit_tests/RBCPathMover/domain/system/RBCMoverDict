@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      RBCMoverDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+normalizePathCoordinates  true;
+useExternalEdgeIndices    true;
+
+RBCVolume    0.042411500823462206;
+
+diameterFunction
+{
+    type   Pries2005;
+
+    dOff   2.4;
+    dCrit  10.5;
+    dTop   150;
+    d50    100;
+    eAmp   1.1;
+    eWidth 0.001;
+    ePeak  0.5;
+    wMax   2.6;
+}
+
+inletPO2
+{
+    type   constant;
+    values
+    (
+        0  $PO2_RBC_inlet
+        7  20.
+    );
+}

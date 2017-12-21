@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cp constant/graphDict.org constant/graphDict
+cp constant/edgeVelocities.org constant/edgeVelocities
+cp constant/RBCPaths.org constant/RBCPaths
+
+translateVGMData.py -f VGMData.pkl
+

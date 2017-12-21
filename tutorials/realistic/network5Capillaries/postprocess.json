@@ -1,0 +1,10 @@
+{
+    "postprocessing": [
+        {
+            "type": "hemoglobinOnSegments",
+            "fieldName": "Hb_mean",
+            "averagingMode": "timeStart",
+            "averagingStart": 12.4
+        }
+    ]
+}

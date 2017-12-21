@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+rm log.*
+
+mkdir -p 0
+cp 0.org/f.org 0/f
+cp 0.org/phi.org 0/phi
+
+runApplication blockMesh
+
+runApplication topoSet
+
+runApplication setsToZones
+
+runApplication splitMeshRegions -cellZones -overwrite
+
+rm -r 0/domain0
+rm -r constant/domain0
+rm -r system/domain0
+
+runApplication testMeshToSubMesh
+

@@ -1,0 +1,110 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     hbPOGraphFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         0.101;
+
+deltaT          1e-3;
+
+writeControl    runTime;
+
+writeInterval   1e-3;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  8;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+libs
+(
+    "libOpenFOAM.so"
+    "libfiniteVolume.so"
+    "libgraph.so"
+);
+
+
+DebugSwitches
+{
+    vascularGraphRegions   1;
+    circularTubeGraph      0;
+    graphVelocityEngine    0;
+    RBCCollection          1;
+    regionAddRemoveFvMesh  0;
+    RBCPathMover           1;
+} 
+
+
+functions
+{
+    sampleHb
+    {
+        type        sampleRBCField;
+        functionObjectLibs  ("libmyFunctionObjects.so");
+        graphName   graphDict;
+        field       Hb;
+    }
+
+    minMax
+    {
+        type            fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        log             true;
+        write           true;
+
+        fields
+        (
+            PO2
+            Hb_euler
+        );
+    }
+
+    volumeAverages
+    {
+        type            volumeAverage;
+        functionObjectLibs ("libsimpleSwakFunctionObjects.so");
+        verbose         true;
+        fields
+        (
+            PO2
+        );
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+}
+
+
+// ************************************************************************* //
+

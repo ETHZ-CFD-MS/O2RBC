@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source config_vars
+
+echo "Testing RBCPathMover with normalized paths"
+cp $eulerCaseDir/constant/RBCPaths.normalized $eulerCaseDir/constant/RBCPaths
+cp $eulerCaseDir/system/RBCMoverDict.normalized $eulerCaseDir/system/RBCMoverDict
+testRBCPathMover -case $eulerCaseDir | tee log.testRBCPathMover.normalized
+
+echo "Testing RBCPathMover with non-normalized paths"
+cp $eulerCaseDir/constant/RBCPaths.not_normalized $eulerCaseDir/constant/RBCPaths
+cp $eulerCaseDir/system/RBCMoverDict.not_normalized $eulerCaseDir/system/RBCMoverDict
+testRBCPathMover -case $eulerCaseDir | tee log.testRBCPathMover.not_normalized

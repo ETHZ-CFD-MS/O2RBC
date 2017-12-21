@@ -1,0 +1,6 @@
+regionAddRemoveFvMesh/regionAddRemoveFvMesh.C
+disconnectedZoneMesh/disconnectedZoneMesh.C
+
+LIB = $(FOAM_USER_LIBBIN)/libmyTopoChangerFvMesh
+
+

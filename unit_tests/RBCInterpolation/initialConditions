@@ -1,0 +1,31 @@
+PO2_tissue          22.0;    // [-], PO2 value in the tissue at the beginning of the simulation
+PO2_plasma          40.0;    // [-], PO2 value in the plasma around RBCs at the beginning of the simulation and at the plasma inlet
+C_plasma            1128;    // [-], C_O2 value in the plasma around RBCs at the beginning of the simulation and at the plasma inlet
+LDMean              0.36;    // [-], mean line density
+LDStdDev            0.114;   // [-], standard deviation of line density (for Gaussian model)
+PO2_RBC_inlet       90.0;    // [-], PO2 value in RBC at the plasma inlet
+C_RBC_inlet         3042;    // [-], C_O2 value in RBC at the plasma inlet
+RBC_velocity        0.57e-3; // [m s^-1]
+RBCLength           7.274823906e-06; // [m], RBC length
+
+P_50                47.9;    // [mmHg]
+hill_exponent       2.64;    // [-]
+dissociation_rate   44.0;    // [s^-1], see Eggleton, 2000
+N_Hb                2.03e1;  // [mol m^-3], molar concentration of Hb in RBCs, see Eggleton, 2000
+vol_mol_O2          2.544e4; // [mlO2 molO2^-1], from perfect gas law at 36.9 degrees Celsius
+O2_consumption_rate 5000;    // [mlO2 m^-3 s^-1], fitted
+PO2_crit            1.0;     // [mmHg], critical PO2 for consumption term, see McGuire, 2001
+
+kappa_Hb            1.44e-11;// [m^2 s^-1], see Eggleton, 2000
+
+kappa_O2_RBC        9.5e-10; // [m^2 s^-1], see Eggleton, 2000
+kappa_O2_plasma     2.18e-9; // [m^2 s^-1], see Eggleton, 2000
+kappa_O2_wall       8.73e-10;// [m^2 s^-1], see Eggleton, 2000
+kappa_O2_tissue     2.41e-9; // [m^2 s^-1], see Eggleton, 2000
+
+alpha_RBC           33.8;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+alpha_plasma        28.2;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+alpha_wall          38.9;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+alpha_tissue        38.9;    // [mlO2 m^-3 mmHg^-1], see Eggleton, 2000
+
+#inputMode merge

@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Post-process an axisymmetric case.
+#
+
+cd domain
+sampleAndPlot.py
+
+plotPO2XProfiles.py --min-time 0.0 --max-time 4.0 --width 3.5
+plotPO2YProfiles.py --min-time 0.0 --max-time 4.0
+
+plotAveragedProbes.py --from_time 1 -a --width 3.5
+plotProbe.py -p probe05PO2 --min-time 1 --max-time 4 --positions 0 1 2 3 4
+cd ..

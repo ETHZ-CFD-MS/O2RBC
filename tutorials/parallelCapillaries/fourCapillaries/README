@@ -1,0 +1,7 @@
+To modify the graph and the RBCPaths, modify the file RBCPathParams.json.
+Corresponding modifications should be done in domain/system/controlDict and
+domain/system/RBCMoverDict.
+Then run for example
+
+generateCapillaryArrayGraph.py -L 200e-6 -H 100e-6 -o graphDict.pkl
+generateStraightRBCPaths.py --paramFile RBCPathParams.json

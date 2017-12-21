@@ -1,0 +1,109 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+x0    0;
+x1    100e-6;
+y0    0;
+y1    100e-6;
+z0    0;
+z1    100e-6;
+
+vertices
+(
+    ($x0 $y0 $z0)   // 0
+    ($x1 $y0 $z0)   // 1
+    ($x1 $y1 $z0)   // 2
+    ($x0 $y1 $z0)   // 3
+    ($x0 $y0 $z1)   // 4
+    ($x1 $y0 $z1)   // 5
+    ($x1 $y1 $z1)   // 6
+    ($x0 $y1 $z1)   // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (52 52 52) simpleGrading (1 1 1)
+    // hex (0 1 2 3 4 5 6 7) (104 104 104) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    entranceSides 
+    {
+        type patch;
+        faces
+        (
+            (0 4 7 3)
+            (2 6 5 1)
+        );
+    }
+
+    tissueTop
+    {
+        type cyclic;
+        faces
+        (
+            (3 7 6 2)
+        );
+        neighbourPatch      tissueBottom;
+        transform           translational;
+        separationVector    (0 -100e-6 0);
+    }
+    tissueBottom
+    {
+        type cyclic;
+        faces
+        (
+            (1 5 4 0)
+        );
+        neighbourPatch tissueTop;
+        transform           translational;
+        separationVector    (0 $y1 0);
+    }
+    tissueLeft
+    {
+        type cyclic;
+        faces
+        (
+            (0 3 2 1)
+        );
+        neighbourPatch tissueRight;
+        transform           translational;
+        separationVector    (0 0 $z1);
+    }
+    tissueRight
+    {
+        type cyclic;
+        faces
+        (
+            (4 5 6 7)
+        );
+        neighbourPatch tissueLeft;
+        transform           translational;
+        separationVector    (0 0 -100e-6);
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
+

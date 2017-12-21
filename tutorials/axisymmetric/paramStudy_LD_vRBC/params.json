@@ -1,0 +1,13 @@
+{
+    "className": "LDvRBCParameterStudy",
+    "baseCase": "baseCase",
+
+    "LDMin"  : 0.2,
+    "LDMax"  : 0.6,
+    "nLD"    : 5,
+    "UMin"    : 0.6e-3,
+    "UMax"    : 1.4e-3,
+    "nU"      : 3,
+
+    "averageStart": 0.5
+}

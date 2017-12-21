@@ -1,0 +1,17 @@
+{
+    "postprocessing": [
+        {
+            "type": "hemoglobinOnWholePaths",
+            "fieldName": "Hb_mean",
+            "selectionMode": "firstTime",
+            "firstTime": 18
+        },
+        {
+            "type": "hemoglobinWithIntegrator",
+            "averageIntegratedHb": 0,
+            "integrateWithTopologicalRadii": 1,
+            "graphPickleName": "graphForIntegration.pkl"
+        }
+
+    ]
+}

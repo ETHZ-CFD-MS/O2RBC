@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# Save results of an Eulerian simulation
+
+dir_name=$1
+
+mkdir -p $dir_name/domain
+cp     sim_params.txt $dir_name
+
+# do not follow symbolic links when copying
+cp -Lr domain/0.org $dir_name/domain
+cp -Lr domain/0 $dir_name/domain
+mv     domain/[0-9].[0-9]* $dir_name/domain
+mv     domain/[1-9] $dir_name/domain
+mv     domain/RBCPositions.txt $dir_name/domain
+cp -Lr domain/constant $dir_name/domain
+cp -Lr domain/system $dir_name/domain
+cp     domain/*.foam $dir_name/domain
+
+cp -Lr lagrangian.org $dir_name
+mv     lagrangian?  $dir_name
+mv     lagrangian?? $dir_name
+
+mv log.* $dir_name
+cp initialConditions $dir_name
+cp geometricData $dir_name
+
+for f in *.stl
+do
+    echo $f
+    ln -s $(readlink -f $f) $dir_name/$f
+    symlinks -c $dir_name
+done
+count=`ls -1 domain/samplePlots* 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/samplePlots* $dir_name/domain
+fi
+count=`ls -1 domain/pySamplePlots* 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/pySamplePlots* $dir_name/domain
+fi
+count=`ls -1 domain/sets* 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/sets* $dir_name/domain
+fi
+count=`ls -1 domain/*.png 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/*.png $dir_name/domain
+fi
+count=`ls -1 domain/swak* 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/swak* $dir_name/domain
+fi
+count=`ls -1 domain/probe* 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+    mv domain/probe* $dir_name/domain
+fi
+count=`ls -1 domain/minMax 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+mv domain/minMax $dir_name/domain
+fi
+count=`ls -1 domain/VTK 2>/dev/null | wc -l`
+if [ $count != 0 ]; then
+mv domain/VTK $dir_name/domain
+fi

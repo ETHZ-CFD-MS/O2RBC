@@ -1,0 +1,48 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# remove links for cylinder mesh
+for proc in processor* ; do
+    rm $proc/0/cylinder
+    rm $proc/constant/cylinder
+done
+
+rm -r processor*
+rm -r 0
+rm -r constant/tube[0-9][0-9]*
+rm log.*
+
+mkdir -p 0/cylinder
+
+cp 0.org/cylinder.org/inLumenCylinder.org 0/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org  0/cylinder/inWallCylinder
+
+runApplication blockMesh
+mv log.blockMesh log.blockMesh.domain
+runApplication checkMesh
+mv log.checkMesh log.checkMesh.domain
+
+m4 constant/cylinder/polyMesh/cylinderMesh.m4 > constant/cylinder/polyMesh/blockMeshDict 
+runApplication blockMesh -region cylinder
+runApplication checkMesh -region cylinder
+
+runApplication topoSet -region cylinder
+
+runApplication setFields -region cylinder
+
+runApplication decomposePar
+
+# create links for cylinder mesh
+for proc in processor* ; do
+    mkdir -p $proc/0
+    touch $proc/vascularGraphRegions.$proc.foam
+    ln -s ../../0/cylinder        $proc/0/cylinder
+    ln -s ../../constant/cylinder $proc/constant/cylinder
+done
+
+nProcs=`getNumberOfProcessors`
+runParallel ./testVascularGraphRegions $nProcs
+
+foamToVTK -surfaceFields
+

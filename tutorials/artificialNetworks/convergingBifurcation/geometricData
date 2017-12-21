@@ -1,0 +1,8 @@
+xMin    0;
+xMax    60e-6;
+yMin   -30e-6;
+yMax    30e-6;
+zMin   -20e-6;
+zMax     0e-6;
+
+dx       1e-6;

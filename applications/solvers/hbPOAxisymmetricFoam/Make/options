@@ -1,0 +1,33 @@
+EXE_INC = \
+    -Wno-old-style-cast \
+    -Wno-unused-local-typedefs \
+    -Wno-parentheses \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/sampling/lnInclude \
+    -I$(LIB_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(LIB_SRC)/dynamicFvMesh/lnInclude \
+    -I$(LIB_SRC)/dynamicMesh/lnInclude \
+    -I$(OF_CBF_SRC)/graph/lnInclude \
+    -I$(OF_CBF_SRC)/bloodChemistry/lnInclude \
+    -I$(OF_CBF_SRC)/meshTools/lnInclude \
+    -I$(OF_CBF_SRC)/RBCTools/lnInclude \
+    -I$(OF_CBF_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(OF_CBF_SRC)/solutionControl/lnInclude \
+    -I$(OF_CBF_SRC)/miscellaneous/lnInclude \
+    -I$(BOOST_INCLUDEDIR) \
+    -I$(SWAK4FOAMDIR)/Libraries/swak4FoamParsers/lnInclude \
+    -I$(SWAK4FOAMDIR)/Libraries/swakSourceFields/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -L$(FOAM_USER_LIBBIN) \
+    -lgraph \
+    -lbloodChemistry \
+    -lcustomMeshTools \
+    -lRBCTools \
+    -lmyTopoChangerFvMesh \
+    -lsolutionControl \
+    -lmiscellaneous \
+    -lswak4FoamParsers \
+    -lswakSourceFields

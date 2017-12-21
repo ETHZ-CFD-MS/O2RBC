@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Post-process an axisymmetric case.
+#
+
+cd domain
+
+# Compute inRBCEuler - 1
+foamCalcEx addSubtract inRBCEulerMean add -value -1 -latestTime
+# Compute 1 - inRBCEuler 
+foamCalcEx multiplyDivide inRBCEulerMean_add_value multiply -value -1 -latestTime
+# Compute PO2Plasma/inRBCEuler
+foamCalcEx multiplyDivide PO2PlasmaMean divide -field inRBCEulerMean_add_value_multiply_value -latestTime
+sampleAndPlot.py
+
+cd ..
+

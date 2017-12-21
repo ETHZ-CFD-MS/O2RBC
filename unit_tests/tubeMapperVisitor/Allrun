@@ -1,0 +1,19 @@
+#!/bin/bash
+
+. $OF_SCRIPTS/bash/myRunFunctions
+
+rm -r 0
+rm -r constant/tube?
+rm log.*
+
+mkdir -p 0/cylinder
+
+myRunApplication blockMesh -s domain
+myRunApplication checkMesh -s domain
+
+m4 constant/cylinder/polyMesh/cylinderMesh.m4 > constant/cylinder/polyMesh/blockMeshDict 
+myRunApplication blockMesh -s cylinder -region cylinder
+myRunApplication checkMesh -s cylinder -region cylinder
+
+./testTubeMapperVisitor
+

@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Post-process an axisymmetric case.
+#
+
+cd domain
+sampleAllDicts.py
+cd ..
+
+touch domain/SIMULATION_FINISHED

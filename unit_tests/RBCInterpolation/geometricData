@@ -1,0 +1,8 @@
+R_plasma   2.0e-6;    // radius of pure plasma (without ESL)
+R_wall_min 2.59e-6;   // lower y-coordinate for the faceSet wallOutFaces
+R_wall     2.6e-6;    // outer capillary wall radius (wall thickness of 1 mum in human brain, scaled down for mice)
+
+R_centerline   0.3e-6; // radius of "centerline" cell set
+
+#inputMode merge
+

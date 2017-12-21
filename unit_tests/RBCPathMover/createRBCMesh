@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Create a RBC mesh using topoSet and a RBC source mesh.
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+source config_vars
+
+# Copy fields to 0 directory
+cd $RBCCaseDir
+mkdir -p 0
+cp 0.org/Hb.org        0/Hb
+cp 0.org/PO2_RBC.org   0/PO2_RBC
+cp 0.org/in_RBC.org    0/in_RBC
+cp 0.org/meshPhi.org   0/meshPhi
+cd ..
+
+# Create mesh from which all RBC meshes will be generated
+myRunApplication blockMesh -s $RBCSourceDir -case $RBCSourceDir
+
+# Wipe out all cell sets
+rm -f $RBCSourceDir/constant/polyMesh/sets/*
+rm -f $RBCSourceDir/constant/polyMesh/cellZones
+
+# Create cellSet corresponding to the STL surface
+myRunApplication topoSet -s $RBCSourceDir -case $RBCSourceDir
+
+# Create cellZone
+myRunApplication setsToZones -s $RBCSourceDir -case $RBCSourceDir -noFlipMap
+
+# Use splitMeshRegions
+myRunApplication splitMeshRegions -s $RBCSourceDir -case $RBCSourceDir -cellZones -overwrite
+
+# Remove zones: this is essential since the zones are created by RBCMeshFactory.
+# Existing zones are automatically read and cannot be deleted at run-time.
+rm -rf $RBCSourceDir/constant/RBC/polyMesh/pointZones
+rm -rf $RBCSourceDir/constant/RBC/polyMesh/cellZones
+rm -rf $RBCSourceDir/constant/RBC/polyMesh/faceZones
+
+# clean up useless stuff
+rm -rf $RBCSourceDir/0/domain0
+rm -rf $RBCSourceDir/constant/domain0
+rm -rf $RBCSourceDir/system/domain0
+
+# Clean-up remaining files
+rm $RBCSourceDir/0/cellToRegion
+
+touch $RBCCaseDir/$RBCCaseDir.foam
+touch $RBCSourceDir/$RBCSourceDir.foam
+
+
+
+
+

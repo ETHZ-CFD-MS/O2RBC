@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+generateStraightRBCPaths.py --paramFile RBCPathParams.json 
+
+
+./removeLinks
+
+
+./cleanCase >> log.cleanCase
+
+
+./prepareEulerianCase
+
+
+./createRBCMesh
+
+
+./makeLinks
+
+
+./runCase

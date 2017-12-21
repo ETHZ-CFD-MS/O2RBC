@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source config_vars
+
+set date='eval date +%Y%h%d-%H%M'
+
+testRBCInterpolation -case $eulerCaseDir | tee log.testRBCInterpolation
+

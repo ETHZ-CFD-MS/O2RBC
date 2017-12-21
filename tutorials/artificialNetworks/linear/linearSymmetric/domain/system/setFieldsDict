@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+// default values are for the plasma.
+defaultFieldValues
+(
+);
+
+regions
+(
+    // ===================================================================== //
+    // capillary
+    // ===================================================================== //
+    cellToCell
+    {
+        set plasma;
+
+        fieldValues
+        (
+            volScalarFieldValue PO2      $PO2Plasma
+        );
+    }
+);
+
+// ************************************************************************* //
+

@@ -1,0 +1,8 @@
+constant/cellToRegion
+constant/polyMesh/faces
+constant/polyMesh/owner
+constant/polyMesh/neighbour
+constant/polyMesh/points
+constant/polyMesh/*Zones
+constant/polyMesh/boundary
+constant/polyMesh/sets

@@ -1,0 +1,4 @@
+testRBCPathCollection.C
+
+EXE = ./testRBCPathCollection
+

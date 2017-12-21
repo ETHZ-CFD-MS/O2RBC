@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+# myRunApplication initializeHbPOAxisymmetric $pFlag -np $nProcs -case $eulerCaseDir
+myRunApplication initializeHbPOAxisymmetric $pFlag -np $nProcs -case $eulerCaseDir
+myRunApplication hbPOAxisymmetricFoam $pFlag -np $nProcs -case $eulerCaseDir

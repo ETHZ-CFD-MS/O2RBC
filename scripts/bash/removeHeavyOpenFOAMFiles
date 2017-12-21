@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "Looking for errors in log-files:"
+echo "Running grep -i error log.*"
+echo ""
+grep -i error log.*
+echo ""
+
+echo "Removing lagrangian folders"
+rm -r lagrangian[0-9] lagrangian[1-9][0-9]
+echo "Removing mesh files"
+cd domain/constant/polyMesh
+rm faces* neighbour* owner* points*
+rm -r sets
+cd ../../..
+rm -r lagrangian.org/constant/RBC/polyMesh lagrangian.org/constant/non_RBC
+cd lagrangian.org/constant/polyMesh
+rm faces* neighbour* owner* points*
+rm -r sets
+cd ../../..
+stripFile log.hbPOEulerFoam

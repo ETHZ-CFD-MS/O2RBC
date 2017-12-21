@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+source $OF_SCRIPTS/bash/myRunFunctions
+
+usage() { echo "Usage: $0 [-c <fineCaseDir>]" 1>&2; exit 1; }
+
+getLastTime()
+{
+    caseName=$1
+    cd $1/domain
+    ls -d [0-9]* | tail -n 1
+}
+
+consistentFlag=""
+while getopts ":c:" o; do
+    case "${o}" in
+        c)
+            fineCase=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+coarseCase="coarse_${fineCase}"
+         
+if [ ! -d "$fineCase" ]; then
+    echo "Directory $fineCase does not exist."
+    echo ""
+    usage
+fi
+
+if [ ! -d "$coarseCase" ]; then
+    echo "Directory $coarseCase does not exist."
+    echo ""
+    usage
+fi
+
+cd $coarseCase
+./Allrun
+if [ ! -f "$coarseCase/SIMULATION_FINISHED" ]; then
+    echo "Simulation in directory $coarseCase did not run correctly, exiting..."   
+    exit 1
+fi
+cd ..
+
+cd $fineCase
+prepareRestartFromMappedFieldsAxisymmetric -c -s ../$coarseCase
+cd ..
+
+cd $coarseCase
+removeHeavyOpenFOAMFiles
+cd ..
+
+cd $fineCase
+myRunApplication hbPOEulerFoam -case domain
+cd ..

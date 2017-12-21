@@ -1,0 +1,71 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+# replace initial fields
+cd $eulerCaseDir
+mkdir -p $startTime/cylinder
+mkdir -p $startTime/uniform
+cp 0.org/PO2.org           $startTime/PO2
+cp 0.org/C.org             $startTime/C
+cp 0.org/alpha.org         $startTime/alpha
+cp 0.org/kappa_O2.org      $startTime/kappa_O2
+cp 0.org/fCorr.org         $startTime/fCorr
+cp 0.org/RBCCollection.org $startTime/uniform/RBCCollection
+
+cp 0.org/cylinder.org/inLumenCylinder.org  $startTime/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org   $startTime/cylinder/inWallCylinder
+cd ..
+
+# create domain mesh
+myRunApplication blockMesh -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication checkMesh -s $eulerCaseDir -case $eulerCaseDir
+
+# create base cylinder mesh (for vascular regions)
+mkdir -p $eulerCaseDir/$startTime/cylinder
+m4 $eulerCaseDir/constant/cylinder/polyMesh/cylinderMesh.m4 \
+ > $eulerCaseDir/constant/cylinder/polyMesh/blockMeshDict 
+myRunApplication blockMesh -s cylinder -case $eulerCaseDir -region cylinder
+myRunApplication checkMesh -s cylinder -case $eulerCaseDir -region cylinder
+
+# set field values in cylinder
+myRunApplication topoSet -s cylinder -case $eulerCaseDir -region cylinder
+myRunApplication setFields -s cylinder -case $eulerCaseDir -region cylinder
+
+# create the vascular graph regions
+myRunApplication createVascularGraphRegions -case $eulerCaseDir
+
+# create a cell set for the lumen
+myRunApplication topoSet -s lumen -case $eulerCaseDir \
+                         -dict system/topoSetDict.lumen
+
+# create a subMesh for the lumen
+myRunApplication setsToZones -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication mySplitMeshRegions -s $eulerCaseDir -case $eulerCaseDir \
+                                    -cellZonesOnly -overwrite
+
+# create cell zones that correspond to connected components
+rm -r $eulerCaseDir/constant/lumen/polyMesh/*Zones*
+myRunApplication mySplitMeshRegions -s $eulerCaseDir.cellZones  \
+                                    -case $eulerCaseDir -region lumen \
+                                    -makeCellZones -overwrite
+
+# remove unnecessary folders and fields (only keep fCorr in lumen)
+cd $eulerCaseDir
+rm -r system/nonLumen
+rm -r constant/nonLumen
+
+if [[ $isParallel == "1" ]]; then
+    for proc in processor* ; do
+        rm -r $proc/constant/nonLumen
+        rm -r $proc/$startTime/nonLumen
+        rm    $proc/$startTime/fCorr
+        find  $proc/$startTime/lumen/ -type f -not -name "fCorr*" -delete
+    done
+else
+    rm -r $startTime/nonLumen
+    find $startTime/lumen/ -type f -not -name "fCorr*" -delete
+fi
+cd ..
+

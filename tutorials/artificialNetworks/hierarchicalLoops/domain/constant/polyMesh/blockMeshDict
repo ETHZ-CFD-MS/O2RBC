@@ -1,0 +1,74 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../../geometricData"
+
+nx  #calc "int(2*round(($xMax-($xMin))/(2*$dx)))";
+ny  #calc "int(2*round(($yMax-($yMin))/(2*$dx)))";
+nz  #calc "int(2*round(($zMax-($zMin))/(2*$dx)))";
+
+vertices
+(
+    ($xMin $yMin $zMin)   // 0
+    ($xMax $yMin $zMin)   // 1
+    ($xMax $yMax $zMin)   // 2
+    ($xMin $yMax $zMin)   // 3
+    ($xMin $yMin $zMax)   // 4
+    ($xMax $yMin $zMax)   // 5
+    ($xMax $yMax $zMax)   // 6
+    ($xMin $yMax $zMax)   // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($nx $ny $nz) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    domainBoundary
+    {
+        type patch;
+        faces
+        (
+            (3 7 6 2)
+            (0 4 7 3)
+            (2 6 5 1)
+            (1 5 4 0)
+            (0 3 2 1)
+        );
+    }
+
+    frontSymmetry
+    {
+        type symmetryPlane;
+        faces
+        (
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
+

@@ -1,0 +1,4 @@
+Command to test the utility:
+
+concatenateEdgeVelocities -outputFile edgeVelocities -fileNames "(edgeVelocities1 edgeVelocities2 edgeVelocities3)"
+

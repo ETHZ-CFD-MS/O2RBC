@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      RBCMoverDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+normalizePathCoordinates   false;
+useExternalEdgeIndices     true;
+
+RBCVolume       $RBCVolume;
+
+initialField    Hb;
+initialValue    $HbInit;
+
+inletValues
+{
+    #include "../../initialConditions"
+    type    constant;
+    field   Hb;
+    values
+    (
+        0   $HbInlet1
+        1   $HbInlet2
+        2   $HbInlet2
+        3   $HbInlet1
+    );
+}
+
+sampleMeshNames
+{
+    type   edgeFunction;
+    values
+    (
+        0  sampleRBC0
+        1  sampleRBC2
+        2  sampleRBC0
+        3  sampleRBC2
+    );
+}
+
+diameterFunction
+{
+    type   scalarFactor;
+    factor 0.8;
+}
+

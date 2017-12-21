@@ -1,0 +1,41 @@
+#!/bin/bash
+
+source config_vars
+N_rbc=${#RBCDirs[@]}
+
+# rm $eulerCaseDir/constant/cellDecomposition
+
+rm -r $eulerCaseDir/constant/polyMesh/sets
+# rm -r $lagBaseCaseDir/constant/polyMesh/sets
+
+# rm -r $eulerCaseDir/proc*
+# rm -r $lagCaseDir/proc*
+
+rm -r $eulerCaseDir/[0-9].[0-9]*
+rm -r $eulerCaseDir/[1-9]
+rm -rf $eulerCaseDir/*e-05 $eulerCaseDir/*e-06
+
+cd $eulerCaseDir/constant/polyMesh
+rm boundary faces owner neighbour points
+cd ../../..
+
+cd $lagBaseCaseDir/constant/polyMesh
+rm boundary faces owner neighbour points cellZones
+cd ../../..
+
+cd $RBCBaseCaseDir/constant/polyMesh
+rm boundary faces owner neighbour points cellZones
+cd ../../..
+
+rm -r $lagBaseCaseDir/0
+rm -r $lagBaseCaseDir/constant/RBC
+rm -r $lagBaseCaseDir/constant/non_RBC
+
+i=0
+while [ $i -lt "$N_rbc" ]; do
+    rm -r ${RBCDirs[$i]}
+    let "i++"
+done
+
+rm log.*
+

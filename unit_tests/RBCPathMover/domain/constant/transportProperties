@@ -1,0 +1,57 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+PO2_RBC_inlet         PO2_RBC_inlet [0 0 0 0 0 0 0 ] $PO2_RBC_inlet;
+PO2_plasma            PO2_plasma    [0 0 0 0 0 0 0 ] $PO2_plasma;
+
+alpha_RBC             alpha_RBC       [0 -3 0 0 0 0 0 ] $alpha_RBC;    // [mlO2 m^-3 mmHg^-1]
+kappa_O2_RBC          kappa_O2_RBC    [0 2 -1 0 0 0 0 ] $kappa_O2_RBC;
+
+O2_consumption_rate   O2_consumption_rate [0 -3 -1 0 0 0 0 ] $O2_consumption_rate; // [mlO2 m^-3 s^-1]
+PO2_crit              PO2_crit [ 0 0 0 0 0 0 0 ] $PO2_crit; // [mmHg]
+
+RBC_velocity          RBC_velocity [0 1 -1 0 0 0 0 ] $RBC_velocity;
+
+P_50                  P_50 [ 0 0 0 0 0 0 0 ] $P_50; // [mm Hg]
+hill_exponent         hill_exponent [ 0 0 0 0 0 0 0 ] $hill_exponent; // [-]
+
+kappa_Hb              kappa_Hb [ 0 2 -1 0 0 0 0 ] $kappa_Hb;
+
+dissociation_rate     dissociation_rate [ 0 0 -1 0 0 0 0 ] $dissociation_rate;
+vol_mol_O2            vol_mol_O2 [0 0 0 0 0 0 0 ] $vol_mol_O2; // [mlO2 mol-1], molar volume of O2 under standard conditions
+N_Hb                  N_Hb [0 -3 0 0 0 0 0 ] $N_Hb; // [mol m^-3], molar concentration of Hb in RBCs
+
+alpha
+{
+    #include "../../initialConditions"
+    RBCValue     $alpha_RBC; 
+    plasmaValue  $alpha_plasma;
+    wallValue    $alpha_wall;
+    tissueValue  $alpha_tissue;
+}
+kappa
+{
+    #include "../../initialConditions"
+    RBCValue     $kappa_O2_RBC; 
+    plasmaValue  $kappa_O2_plasma;
+    wallValue    $kappa_O2_wall;
+    tissueValue  $kappa_O2_tissue;
+}
+
+// ************************************************************************* //

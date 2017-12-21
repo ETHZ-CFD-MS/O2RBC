@@ -1,0 +1,4 @@
+RBCProbe/RBCProbe.C
+sampleRBCField/sampleRBCField.C
+sampleRBCFieldAxisymmetric/sampleRBCFieldAxisymmetric.C
+LIB = $(FOAM_USER_LIBBIN)/libmyFunctionObjects

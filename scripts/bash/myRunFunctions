@@ -1,0 +1,162 @@
+#!/bin/bash
+#
+# Custom run functions
+#
+
+getStartTime()
+{
+    sed -ne 's/^startTime *\([^;]*\);.*$/\1/p' system/controlDict
+}
+
+hasLsf()
+{
+    if [[ $LSF_LIBDIR != "" ]]; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
+lsfWaitOption()
+{
+    lastJobName=`lsfLastJobName`
+    if [[ "$lastJobName" == "" ]]; then
+        option=""
+    else
+        option="-w done($lastJobName)"
+    fi
+
+    echo $option
+}
+
+lsfLastJobName()
+{
+    jobName=`{ bjobs -w; } 2>&1 | tail -n 1 | awk '{print $7}'`
+
+    echo $jobName
+}
+
+lsfLastJobId()
+{
+    jobName=`lsfLastJobName`
+
+    # if the job name contains a hyphen, return all that comes after the last hyphen
+    if [[ $jobName =~ .*-.* ]]; then
+        echo $jobName | sed 's/^.*-//'
+    else
+    # else, return empty string
+        echo ""
+    fi
+}
+
+lsfNewJobId()
+{
+    lastJobId=`lsfLastJobId`
+
+    if [[ "$lastJobId" == "" ]]; then
+        newJobId=0
+    else
+        newJobId=$((lastJobId+1))
+    fi
+
+    echo $newJobId
+}
+
+myRunApplication()
+{
+    APP_RUN=$1
+    APP_NAME=${1##*/}
+    shift
+
+    unset args
+    local suffix=""
+    local parallel=0
+    local nProcs=1
+    local prependLastKey=0
+    local useLsf=0
+
+    while [[ $# > 0 ]]
+    do
+        key="$1"
+        shift
+
+        case $key in
+            -p|--parallel)
+                parallel=1
+                ;;
+            -np|--nProcs)
+                nProcs="$1"
+                shift
+                ;;
+            -s|--suffix)
+                suffix="$1"
+                shift
+                ;;
+            -b|--batch)
+                useLsf=1
+                ;;
+            *)
+                prependLastKey=1
+                break
+                ;;
+        esac
+    done
+
+    if [[ $prependLastKey != 0 ]]; then
+        args=($key $@)
+    else
+        args=$@
+    fi
+
+    # echo "parallel=$parallel, suffix='$suffix', nProcs=$nProcs, Leftovers: ${args[@]}"
+
+    # build the log file name
+    logFileName=log.$APP_NAME
+    if [[ $suffix != "" ]]; then
+        logFileName=$logFileName.$suffix
+    fi
+
+    if [ -f $logFileName ]; then
+        echo "$APP_NAME already run on $PWD: remove log file to re-run"
+        return 1
+    fi
+
+    # if [[ `hasLsf` == "1" ]]; then
+
+    #     oldJobName=`lsfLastJobName`
+    #     oldJobId=`lsfLastJobId`
+    #     jobId=`lsfNewJobId`
+    #     jobName="cbf-$APP_NAME-$jobId"
+    #     # waitOption=`lsfWaitOption`
+    #     waitOption='-K'
+
+    #     # the batch system is used for all parallel jobs and when explicitly specified
+    #     if [[ $parallel != 0 || $useLsf == 1  ]]; then
+    #         # echo "Old Job name = \"$oldJobName\""
+    #         # echo "Old Job ID = \"$oldJobId\""
+    #         # echo "Job ID = \"$jobId\""
+    #         # echo "Job name: $jobName"
+    #         # echo "Wait option: $waitOption"
+
+    #         echo "Submitting job for $APP_RUN using $nProcs processes with job name $jobName."
+    #         bsub -n $nProcs -o $logFileName -J $jobName $waitOption -W 240 \
+    #                 mpirun $APP_RUN -parallel "${args[@]}"
+    #         sleep 0.1
+    #     else
+    #         echo "Running $APP_RUN on $PWD"
+    #         $APP_RUN "${args[@]}" > $logFileName 2>&1
+    #     fi
+
+    # else
+
+        if [[ $parallel != 0 ]]; then
+            echo "Running $APP_RUN in parallel on $PWD using $nProcs processes"
+            mpirun -np $nProcs $APP_RUN -parallel "${args[@]}" < /dev/null > $logFileName 2>&1
+        else
+            echo "Running $APP_RUN on $PWD"
+            $APP_RUN "${args[@]}" > $logFileName 2>&1
+        fi
+    # fi
+
+}
+

@@ -1,0 +1,11 @@
+{
+    "RBCLength"     : 5.4907269e-06,
+    "vRBC"          : 1e-3,
+    "graphDict"     : "graphDict.pkl",
+    "endTime"       : 3.0,
+    "LDDistribution": 
+    {
+        "type"  : "constant",
+        "LDMean": 0.3
+    }
+}

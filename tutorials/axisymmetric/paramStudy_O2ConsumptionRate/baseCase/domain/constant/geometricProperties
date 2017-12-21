@@ -1,0 +1,28 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../geometricData"
+
+radiusRBC          radiusRBC          [0 1 0 0 0 0 0 ] $radiusRBC;
+radiusPlasma       radiusPlasma       [0 1 0 0 0 0 0 ] $radiusPlasma;
+radiusWall         radiusWall         [0 1 0 0 0 0 0 ] $radiusWall;
+radiusTissueLeft   radiusTissueLeft   [0 1 0 0 0 0 0 ] $radiusTissueLeft;
+radiusTissueRight  radiusTissueRight  [0 1 0 0 0 0 0 ] $radiusTissueRight;
+domainLength       domainLength       [0 1 0 0 0 0 0 ] $domainLength;
+
+RBCLength          RBCLength          [0 1 0 0 0 0 0 ] $RBCLength; // [m^3]
+RBCVolume          RBCVolume          [0 3 0 0 0 0 0 ] $RBCVolume; // [m^3]

@@ -1,0 +1,4 @@
+testDisconnectedZoneMesh.C
+
+EXE = ./testDisconnectedZoneMesh
+

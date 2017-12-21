@@ -1,0 +1,16 @@
+RBC/RBC.C
+RBCCollection/RBCCollection.C
+RBCPath/RBCPath.C
+RBCPathCollection/RBCPathCollection.C
+RBCInterpolation/RBCInterpolation.C
+RBCMover/RBCMover/RBCMover.C
+RBCMover/RBCPathMover/RBCPathMover.C
+RBCMover/RBCVelocityMover/RBCVelocityMover.C
+RBCMover/RBCVelocityDynamicElongationMover/RBCVelocityDynamicElongationMover.C
+RBCMeshFactory/RBCMeshFactory.C
+
+regionDependentField/regionDependentField.C
+
+analyticalSolutionPO2Cone/analyticalSolutionPO2Cone.C
+
+LIB = $(FOAM_USER_LIBBIN)/libRBCTools

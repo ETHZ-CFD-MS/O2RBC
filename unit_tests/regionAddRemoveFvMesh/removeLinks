@@ -1,0 +1,12 @@
+#!/bin/bash
+
+source config_vars
+
+cd $RBCCaseDir
+
+rm -r 0/RBC2
+rm -r constant/RBC2
+rm -r system/RBC2
+
+cd ..
+

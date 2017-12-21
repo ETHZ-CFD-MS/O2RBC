@@ -1,0 +1,5 @@
+eulerCaseDir="domain"
+lagBaseCaseDir="lagrangian.org"
+RBCBaseCaseDir="RBC.org"
+RBCDirs=("RBC0");
+sampleRBC="RBC"

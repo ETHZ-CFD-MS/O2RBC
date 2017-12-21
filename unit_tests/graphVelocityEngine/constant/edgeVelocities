@@ -1,0 +1,28 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      edgeVelocities;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+edgeVelocities
+6
+(
+ (0 8(0.2 0.1 0.1 0.1 0.1 0.1 0.1 0.2))       // base case (symmetric)
+ (1.5 8(0.2 0.1 0.05 0.1 0.1 0.1 0.1 0.2))      // test whether a change in the interior has a large influence
+ (2.5 8(0.2 0.15 0.05 0.15 0.05 0.15 0.05 0.2)) 
+ (3.5 8(0.2 0.1 0.1 0.1 0.1 0.1 0.1 0.2))       // base case (symmetric)
+ (4.5 8(0.2 0.1 0.1 0.1 0.1 0.1 0.1 0.1))       // test when given velocities are non-conservative
+ (5.5 8(0.6 0.3 0.3 0.3 0.3 0.3 0.3 0.6))       // test scaling of velocity
+);
+

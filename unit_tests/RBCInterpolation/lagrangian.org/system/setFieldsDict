@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+// default values are for the plasma.
+defaultFieldValues
+(
+    volScalarFieldValue PO2_lag           $PO2_plasma
+    volScalarFieldValue in_RBC            0
+    volScalarFieldValue kappa_O2          $kappa_O2_plasma
+);
+
+regions
+(
+    // ===================================================================== //
+    // RBC
+    // ===================================================================== //
+    cellToCell
+    {
+        set RBC;
+
+        fieldValues
+        (
+            volScalarFieldValue PO2_lag   $PO2_RBC_inlet
+            volScalarFieldValue in_RBC    1
+            volScalarFieldValue kappa_O2  $kappa_O2_RBC
+        );
+    }
+);
+
+// ************************************************************************* //
+
+

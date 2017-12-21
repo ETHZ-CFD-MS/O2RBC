@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Merge a series of flow dicts and RBC dicts produced by VGM.
+#
+
+if [[ $# -lt 2 ]]; then
+    echo "Usage:"
+    echo "mergeVGMDataBackups <graphDict.pkl> <idxBackup1> <idxBackup2> ..."
+    exit
+fi
+
+graphDict=$1
+shift
+backupIndices=$@
+
+if [[ ! -f $graphDict ]]; then
+    echo "The given graphDict file does not exist."
+    exit 1
+fi
+
+for i in ${backupIndices[@]}; do
+    mergeVGMData.py -R RBCdict_BackUp$i.pkl -f flowdict_BackUp$i.pkl $graphDict
+    mv VGMDict.pkl VGMDict_$i.pkl 
+done

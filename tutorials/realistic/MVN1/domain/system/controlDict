@@ -1,0 +1,130 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     hbPOGraphFoam;
+
+startFrom       latestTime;
+
+startTime       10.5;
+
+stopAt          endTime;
+
+endTime         20;
+
+deltaT          1e-3;
+
+writeControl    runTime;
+
+writeInterval   1e-3;
+
+purgeWrite      100;
+
+writeFormat     binary;
+
+writePrecision  8;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+libs
+(
+    "libfiniteVolume.so"
+    "libgraph.so"
+    "libsimpleSwakFunctionObjects.so"
+);
+
+DebugSwitches
+{
+    vascularGraphRegions   0;
+    circularTubeGraph      0;
+    graphVelocityEngine    0;
+    RBCCollection          0;
+    regionAddRemoveFvMesh  0;
+    RBCPathMover           0;
+    meshToMeshMethod       0;
+    meshToMeshMoving       0;
+} 
+
+
+functions
+{
+    sampleRBCHb
+    {
+        type        sampleRBCField;
+        functionObjectLibs  ("libmyFunctionObjects.so");
+        graphName   graphDict;
+        field       Hb;
+    }
+
+    steadyStateFields
+    {
+        type            fieldAverage;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        outputControl   outputTime;
+        timeStart       37.0;
+
+        fields
+        (
+            PO2
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+        );
+    }
+
+    minMax
+    {
+        type            fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        log             true;
+        write           true;
+
+        fields
+        (
+            PO2
+            Hb_euler
+        );
+    }
+
+    volumeAverages
+    {
+        type                volumeAverage;
+        verbose             true;
+        fields
+        (
+            PO2
+        );
+        outputControlMode   timeStep;
+        outputInterval      1;
+        writeStartTime      no;
+
+        ignore_unimplemented_simpleFunctionObject::updateMesh true;
+        ignore_unimplemented_simpleFunctionObject::movePoints true;
+    }
+}
+
+
+// ************************************************************************* //
+
+

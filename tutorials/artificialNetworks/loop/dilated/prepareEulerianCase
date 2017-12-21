@@ -1,0 +1,121 @@
+#!/bin/bash
+
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+# replace initial fields
+cd $eulerCaseDir
+mkdir -p $startTime/uniform
+cp 0.org/PO2.org           $startTime/PO2
+cp 0.org/C.org             $startTime/C
+cp 0.org/alpha.org         $startTime/alpha
+cp 0.org/kappa_O2.org      $startTime/kappa_O2
+cp 0.org/fCorr.org         $startTime/fCorr
+cp 0.org/RBCCollection.org $startTime/uniform/RBCCollection
+
+cp 0.org/cylinder.org/inLumenCylinder.org  constant/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org   constant/cylinder/inWallCylinder
+cd ..
+
+# create domain mesh
+myRunApplication blockMesh -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication checkMesh -s $eulerCaseDir -case $eulerCaseDir
+
+# decompose domain
+if [[ $isParallel == "1" ]]; then
+    myRunApplication decomposePar -s $eulerCaseDir -case $eulerCaseDir
+fi
+
+# create base cylinder mesh (for vascular regions)
+mkdir -p $eulerCaseDir/$startTime/cylinder
+m4 $eulerCaseDir/constant/cylinder/polyMesh/cylinderMesh.m4 \
+ > $eulerCaseDir/constant/cylinder/polyMesh/blockMeshDict 
+myRunApplication blockMesh -s cylinder -case $eulerCaseDir -region cylinder
+myRunApplication checkMesh -s cylinder -case $eulerCaseDir -region cylinder
+
+# set field values in cylinder
+myRunApplication topoSet -s cylinder -case $eulerCaseDir -region cylinder
+myRunApplication setFields -s cylinder -case $eulerCaseDir -region cylinder
+
+# create links for cylinder mesh
+cd $eulerCaseDir
+if [[ $isParallel == "1" ]]; then
+    for proc in processor* ; do
+        mkdir -p $proc/$startTime
+        procId=${proc#*processor}  # extract processor index
+        touch $proc/proc$procId.foam
+        ln -fs ../../$startTime/cylinder  $proc/$startTime/cylinder
+        ln -fs ../../constant/cylinder    $proc/constant/cylinder
+    done
+fi
+cd ..
+
+if [[ $refineMesh == "1" ]]; then
+    myRunApplication topoSet $pFlag -np $nProcs -s graphNeighbours \
+                             -case $eulerCaseDir -dict system/topoSetDict.graphNeighbours
+
+    myRunApplication refineHexMesh $pFlag -np $nProcs -s $eulerCaseDir -case $eulerCaseDir \
+            graphNeighbours -overwrite
+fi
+
+# create the vascular graph regions
+myRunApplication createVascularGraphRegions $pFlag -np $nProcs -case $eulerCaseDir
+
+# create a cell set for the lumen
+myRunApplication topoSet $pFlag -np $nProcs -s lumen -case $eulerCaseDir \
+                         -dict system/topoSetDict.lumen
+
+echo "Removing all cell sets except lumen and nonLumen..."
+cd $eulerCaseDir
+if [[ $isParallel == "1" ]]; then
+    for proc in processor* ; do
+        find $proc/constant/polyMesh/sets/ -type f \
+             -not -name "lumen*" -a -not -name "nonLumen*" -delete
+    done
+else
+    find constant/polyMesh/sets/ -type f \
+             -not -name "lumen*" -a -not -name "nonLumen*" -delete
+fi
+cd ..
+
+# create a subMesh for the lumen
+myRunApplication setsToZones $pFlag -np $nProcs -s $eulerCaseDir -case $eulerCaseDir
+myRunApplication mySplitMeshRegions $pFlag -np $nProcs -s $eulerCaseDir -case $eulerCaseDir \
+                                    -cellZonesOnly -overwrite
+
+# create cell zones that correspond to connected components
+echo "Removing previously created zones..."
+cd $eulerCaseDir
+if [[ $isParallel == "1" ]]; then
+    for proc in processor* ; do
+        rm -r $proc/constant/lumen/polyMesh/*Zones*
+    done
+else
+    rm -r constant/lumen/polyMesh/*Zones*
+fi
+cd ..
+
+myRunApplication mySplitMeshRegions $pFlag -np $nProcs -s $eulerCaseDir.cellZones  \
+                                    -case $eulerCaseDir -region lumen \
+                                    -makeCellZones -overwrite
+
+# change boundary condition for fCorr
+myRunApplication changeDictionary $pFlag -np $nProcs -case $eulerCaseDir -region lumen
+
+# remove unnecessary folders and fields (only keep fCorr in lumen)
+cd $eulerCaseDir
+
+if [[ $isParallel == "1" ]]; then
+    for proc in processor* ; do
+        rm -r $proc/constant/nonLumen
+        rm -r $proc/$startTime/nonLumen
+        rm    $proc/$startTime/fCorr*
+        find  $proc/$startTime/lumen/ -type f -not -name "fCorr*" -delete
+    done
+else
+    rm -r system/nonLumen
+    rm -r constant/nonLumen
+    rm -r $startTime/nonLumen
+    find $startTime/lumen/ -type f -not -name "fCorr*" -delete
+fi
+cd ..

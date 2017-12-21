@@ -1,0 +1,9 @@
+#!/bin/bash
+
+mv case2/0.org/testField case2/0/testField
+
+blockMesh -case case1
+blockMesh -case case2
+
+mapFields case1 -case case2 -mapMethod cellVolumeWeight
+# mapFields case1 -case case2 -mapMethod direct

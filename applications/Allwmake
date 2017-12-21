@@ -1,0 +1,14 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+wmakeCheckPwd "$OF_CBF/applications" || {
+    echo "Error: Current directory is not \$OF_CBF/applications"
+    echo "    The environment variables are inconsistent with the user directory layout."
+    echo "    Check the user OpenFOAM entries in your dot-files and source them."
+    exit 1
+}
+
+set -x
+
+wmake all solvers
+wmake all utilities

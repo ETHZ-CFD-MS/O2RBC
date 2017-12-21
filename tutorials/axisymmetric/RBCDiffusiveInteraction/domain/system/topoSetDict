@@ -1,0 +1,186 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+# include "../../geometricData"
+
+actions
+(
+    {
+        name    plasma;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       (-1 0 0);
+            p2       (1 0 0);
+            radius   $radiusPlasma;
+        }
+    }
+    {
+        name    plasmaWall;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       (-1 0 0);
+            p2       (1 0 0);
+            radius   $radiusWall;
+        }
+    }
+    {
+        name    tissue;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasmaWall;
+        }
+    }
+    {
+        name    tissue;
+        type    cellSet;
+        action  invert;
+    }
+
+    {
+        name    wall;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasmaWall;
+        }
+    }
+    {
+        name    wall;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasma;
+        }
+    }
+
+    {
+        name    centerline;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       (-1 0 0);
+            p2       (1 0 0);
+            radius   $radiusCenterline;
+        }
+    }
+    {
+        name    wallOutFaces;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        sourceInfo
+        {
+            box      (-1 $radiusWallMin -1) (1 $radiusWall 1);
+        }
+    }
+    {
+        name    wallOutFacesSlaveCells;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasmaWall;
+        }
+    }
+
+    // sets for post-processing mass transfer coefficient
+    // a box centered at the domain center is used.
+    // Sets at the outer side of the wall:
+    {
+        name    plasmaWallCenter;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       ($MTCBoxXLeft  0 0);
+            p2       ($MTCBoxXRight 0 0);
+            radius   $radiusWall;
+        }
+    }
+    {
+        name    wallOutFacesCenter;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        sourceInfo
+        {
+            box      ($MTCBoxXLeft $radiusWallMin -1) ($MTCBoxXRight $radiusWall 1);
+        }
+    }
+    {
+        name    wallOutFacesCenterSlaveCells;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasmaWallCenter;
+        }
+    }
+    // Sets at the outer side of the plasma:
+    {
+        name    plasmaCenter;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1       ($MTCBoxXLeft  0 0);
+            p2       ($MTCBoxXRight 0 0);
+            radius   $radiusPlasma;
+        }
+    }
+    {
+        name    plasmaOutFacesCenter;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        sourceInfo
+        {
+            box      ($MTCBoxXLeft $radiusPlasmaMin -1) ($MTCBoxXRight $radiusPlasma 1);
+        }
+    }
+    {
+        name    plasmaOutFacesCenterSlaveCells;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo
+        {
+            set plasmaCenter;
+        }
+    }
+);
+
+

@@ -1,0 +1,21 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/dynamicFvMesh/lnInclude \
+    -I$(LIB_SRC)/dynamicMesh/lnInclude \
+    -I$(LIB_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(OF_CBF_SRC)/RBCTools/lnInclude \
+    -I$(OF_CBF_SRC)/meshTools/lnInclude \
+    -I$(OF_CBF_SRC)/topoChangerFvMesh/lnInclude \
+    -I$(OF_CBF_SRC)/bloodChemistry/lnInclude \
+    -I$(OF_CBF_SRC)/miscellaneous/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -L$(FOAM_USER_LIBBIN) \
+    -lRBCTools \
+    -lmyTopoChangerFvMesh \
+    -lbloodChemistry \
+    -lcustomMeshTools \
+    -lmiscellaneous
+

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source config_vars
+N_rbc=${#RBCDirs[@]}
+
+# rm -r $lagCaseDir/proc*
+
+rm -r $RBCCaseDir/constant/polyMesh/*
+rm -r $RBCCaseDir/0.*
+
+cd RBCSource/constant/polyMesh
+rm -r points faces owner neighbour boundary *Zones sets
+cd ../../..
+
+rm log.*
+rm RBCSource/log.*
+

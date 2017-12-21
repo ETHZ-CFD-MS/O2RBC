@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      singleGraph.x_axis;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+type            sets;
+libs            ("libsampling.so");
+
+fields          ( PO2Mean );
+
+setConfig
+{
+    type    uniform;
+    axis    y;
+    nPoints 200;
+}
+
+interpolationScheme cellPointFace;
+
+setFormat   raw;
+
+writeControl    writeTime;
+
+sets
+(
+    x_10
+    {
+        $setConfig;
+        start   ( 10e-6 0.0 0 );
+        end     ( 10e-6 2.6000e-05 0 );
+    }
+    x_20
+    {
+        $setConfig;
+        start   ( 20e-6 0.0 0 );
+        end     ( 20e-6 2.6000e-05 0 );
+    }
+    x_30
+    {
+        $setConfig;
+        start   ( 30e-6 0.0 0 );
+        end     ( 30e-6 2.6000e-05 0 );
+    }
+    x_40
+    {
+        $setConfig;
+        start   ( 40e-6 0.0 0 );
+        end     ( 40e-6 2.6000e-05 0 );
+    }
+    x_50
+    {
+        $setConfig;
+        start   ( 50e-6 0.0 0 );
+        end     ( 50e-6 2.6000e-05 0 );
+    }
+    x_60
+    {
+        $setConfig;
+        start   ( 60e-6 0.0 0 );
+        end     ( 60e-6 2.6000e-05 0 );
+    }
+    x_70
+    {
+        $setConfig;
+        start   ( 70e-6 0.0 0 );
+        end     ( 70e-6 2.6000e-05 0 );
+    }
+    x_80
+    {
+        $setConfig;
+        start   ( 80e-6 0.0 0 );
+        end     ( 80e-6 2.6000e-05 0 );
+    }
+    x_90
+    {
+        $setConfig;
+        start   ( 90e-6 0.0 0 );
+        end     ( 90e-6 2.6000e-05 0 );
+    }
+);
+
+
+// ************************************************************************* //

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# copy contents of base case folder
+baseCasePath="$OF_CBF/tutorials/parallelCapillaries/capillaryDiffusiveInteraction"
+for f in "$baseCasePath"/*; do
+    filename=$(basename "$f")
+    if [[ "$filename" != "Allrun" ]] && [[ "$filename" != "RBCPathParams.json" ]]; then
+        cp -r "$baseCasePath"/"$filename" .
+    fi
+done
+source config_vars
+
+# replace the RBCMoverDict
+
+cp RBCMoverDict $eulerCaseDir/system/
+
+# run the case
+
+generateStraightRBCPaths.py --paramFile RBCPathParams.json 
+
+./removeLinks
+
+
+./cleanCase >> log.cleanCase
+
+
+./prepareEulerianCase
+
+
+./createRBCMesh
+
+
+./makeLinks
+
+
+./runCase

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Create a RBC mesh using topoSet and a RBC source mesh.
+
+# Source run functions
+source $OF_SCRIPTS/bash/myRunFunctions
+source config_vars
+
+# Copy fields to 0 directory
+cd $RBCCaseDir
+mkdir -p $startTime
+cp 0.org/Hb.org        $startTime/Hb
+cp 0.org/PO2_RBC.org   $startTime/PO2_RBC
+cp 0.org/in_RBC.org    $startTime/in_RBC
+cp 0.org/meshPhi.org   $startTime/meshPhi
+cd ..
+
+# Create mesh from which all RBC meshes will be generated
+myRunApplication blockMesh -s $sampleRBCDir -case $sampleRBCDir
+
+# Adjust the volume of the sample RBC mesh
+myRunApplication adjustRBCMeshVolume -case $sampleRBCDir
+
+# Remove zones: this is essential since the zones are created by RBCMeshFactory.
+# Existing zones are automatically read and cannot be deleted at run-time.
+rm -rf $sampleRBCDir/constant/polyMesh/pointZones
+rm -rf $sampleRBCDir/constant/polyMesh/cellZones
+rm -rf $sampleRBCDir/constant/polyMesh/faceZones
+
+# Decompose domain (even if empty) and fields
+if [[ $isParallel == "1" ]]; then
+    myRunApplication decomposePar -s $RBCCaseDir -case $RBCCaseDir
+    # run again decomposePar for fields in case the method
+    # writeDecomposition() crashes at the end (the division by
+    # avgProcCells=0) may trigger an exception on some platforms).
+    myRunApplication decomposePar -s $RBCCaseDir.fields -case $RBCCaseDir -fields
+fi
+
+touch $RBCCaseDir/$RBCCaseDir.foam
+touch $sampleRBCDir/$sampleRBCDir.foam

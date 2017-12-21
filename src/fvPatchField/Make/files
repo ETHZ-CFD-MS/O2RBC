@@ -1,0 +1,5 @@
+fixedPO2GradientKrogh/fixedPO2GradientKroghFvPatchFields.C
+plasmaRBCInletOutlet/plasmaRBCInletOutletFvPatchScalarField.C
+
+LIB = $(FOAM_USER_LIBBIN)/libcustomFvPatchFields
+

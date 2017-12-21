@@ -1,0 +1,16 @@
+[
+{
+    "domainLength":300e-6,
+    "radiusTissueLeft":28e-6,
+    "radiusTissueRight":28e-6,
+    "radiusPlasma":2e-6,
+    "radiusWall":2.5e-6
+},
+{
+    "domainLength":300e-6,
+    "radiusTissueLeft":28e-6,
+    "radiusTissueRight":28e-6,
+    "radiusPlasma":2e-6,
+    "radiusWall":2.5e-6
+}
+]

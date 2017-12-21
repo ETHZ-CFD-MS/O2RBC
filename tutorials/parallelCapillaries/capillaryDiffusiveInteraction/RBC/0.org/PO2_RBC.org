@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.1.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      PO2_RBC;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+dimensions      [ 0 0 0 0 0 0 0 ];
+
+// The given value is not used. It is set by the RBC moved.
+internalField   uniform 90;
+
+boundaryField
+{
+    RBC_to_nonRBC
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    "symmetry.*"
+    {
+        type            symmetry;
+    }
+}
+
+
+// ************************************************************************* //

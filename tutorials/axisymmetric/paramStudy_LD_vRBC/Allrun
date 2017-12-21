@@ -1,0 +1,11 @@
+#!/bin/bash
+
+paramStudyRunner.py -s
+
+for dir in case_*; do
+    cd $dir
+    ./Allrun
+    cd ..
+done
+
+paramStudyRunner.py -p

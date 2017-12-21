@@ -1,0 +1,73 @@
+#!/bin/bash
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+nProcs=`getNumberOfProcessors`
+
+./cleanCase
+
+# replace initial fields
+mkdir -p 0
+cp 0.org/fCorr.org 0/fCorr
+
+mkdir -p 0/cylinder
+cp 0.org/cylinder.org/inLumenCylinder.org  0/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org   0/cylinder/inWallCylinder
+
+# create domain mesh
+runApplication blockMesh
+mv log.blockMesh log.blockMesh.domain
+runApplication checkMesh
+mv log.checkMesh log.checkMesh.domain
+
+# create base cylinder mesh (for vascular regions)
+m4 constant/cylinder/polyMesh/cylinderMesh.m4 \
+ > constant/cylinder/polyMesh/blockMeshDict 
+runApplication blockMesh -region cylinder
+mv log.blockMesh log.blockMesh.cylinder
+runApplication checkMesh -region cylinder
+mv log.checkMesh log.checkMesh.cylinder
+
+# set field values in cylinder
+runApplication topoSet -region cylinder
+mv log.topoSet log.topoSet.cylinder
+runApplication setFields -region cylinder
+mv log.setFields log.setFields.cylinder
+
+# decompose domain
+runApplication decomposePar
+mv log.decomposePar log.decomposePar.domain
+
+# create links for cylinder mesh
+for proc in processor* ; do
+    mkdir -p $proc/0
+    touch $proc/graphVelocityEngine.$proc.foam
+    ln -s ../../0/cylinder        $proc/0/cylinder
+    ln -s ../../constant/cylinder $proc/constant/cylinder
+done
+
+# create the vascular graph regions
+runParallel createVascularGraphRegions $nProcs
+
+# create a mesh region for the lumen
+runParallel topoSet $nProcs -dict system/topoSetDict.lumen
+runParallel setsToZones $nProcs 
+runParallel mySplitMeshRegions $nProcs -cellZones -overwrite
+
+# change boundary condition for fCorr
+runParallel changeDictionary $nProcs -region lumen
+
+# remove unnecessary folders and fields (only keep fCorr in lumen)
+for proc in processor* ; do
+    rm -r $proc/system/domain0
+    rm -r $proc/constant/domain0
+    rm -r $proc/0/domain0
+    rm    $proc/0/fCorr
+done
+
+# run the test case
+runParallel ./testGraphVelocityEngine $nProcs 
+
+# transform surface fields to VTK format
+foamToVTK -surfaceFields
+foamToVTK -surfaceFields -region lumen

@@ -1,0 +1,85 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      graphDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+edgeType              straight;
+
+tubeOptions
+{
+    useEffectiveDiameter  false;
+}
+
+vertexIndices
+5
+(
+ 0 
+ 1
+ 2
+ 3
+ 4
+)
+;
+
+
+edgeIndices
+4
+(
+ 0
+ 1
+ 2
+ 3
+)
+;
+
+
+adjacencyList
+4
+(
+ (0 1)
+ (1 2)
+ (2 3)
+ (3 4)
+)
+;
+
+
+vertexPositions
+5
+(
+ (-10e-6 0 0)
+ ( 20e-6 0 0)
+ ( 50e-6 0 0)
+ ( 80e-6 0 0)
+ (110e-6 0 0)
+)
+;
+
+
+segmentDiameters
+8
+(
+ 1(6e-6)
+ 1(5e-6)
+ 1(5e-6)
+ 1(5e-6)
+ 1(5e-6)
+ 1(5e-6)
+ 1(5e-6)
+ 1(7e-6)
+)
+;
+
+// ************************************************************************* //

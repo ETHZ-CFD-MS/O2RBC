@@ -1,0 +1,11 @@
+EXE_INC = \
+    -Wno-old-style-cast \
+    -Wno-unused-local-typedefs \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(OF_CBF_SRC)/miscellaneous/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -L$(FOAM_USER_LIBBIN) \
+    -lmiscellaneous
+

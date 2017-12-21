@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Replace a file by a stripped down version.
+
+fileName=$1
+nLinesTop=300
+nLinesBottom=300
+middleString="\n\n***********\nThe middle part of this file was stripped down\n***********\n\n"
+
+echo "Stripping log file in directory $dir..."
+mv $fileName $fileName.bak
+(head -n $nLinesTop && printf "$middleString" && tail -n $nLinesBottom) < $fileName.bak > $fileName
+rm $fileName.bak
+

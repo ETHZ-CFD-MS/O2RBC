@@ -1,0 +1,66 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  1.7.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+
+HbInlet               HbInlet         [0 0 0 0 0 0 0 ]  $HbInlet;
+PO2RBCInlet           PO2RBCInlet     [0 0 0 0 0 0 0 ]  $PO2RBCInlet;
+PO2PlasmaInlet        PO2PlasmaInlet  [0 0 0 0 0 0 0 ]  $PO2PlasmaInlet;
+
+kappaHb               kappaHb         [0 2 -1 0 0 0 0 ] $kappaHb;
+kappaO2RBC            kappaO2RBC      [0 2 -1 0 0 0 0 ] $kappaO2RBC;
+kappaO2Plasma         kappaO2Plasma   [0 2 -1 0 0 0 0 ] $kappaO2Plasma;
+kappaO2Wall           kappaO2Wall     [0 2 -1 0 0 0 0 ] $kappaO2Wall;
+kappaO2Tissue         kappaO2Tissue   [0 2 -1 0 0 0 0 ] $kappaO2Tissue;
+alphaRBC              alphaRBC        [0 -3 0 0 0 0 0 ] $alphaRBC;   
+alphaPlasma           alphaPlasma     [0 -3 0 0 0 0 0 ] $alphaPlasma;
+alphaWall             alphaWall       [0 -3 0 0 0 0 0 ] $alphaWall;  
+alphaTissue           alphaTissue     [0 -3 0 0 0 0 0 ] $alphaTissue;
+
+O2ConsumptionRateConstant O2ConsumptionRate [ 0 -3 -1 0 0 0 0 ] $O2ConsumptionRate; // [mlO2 m^-3 s^-1]
+O2ConsumptionRate
+{
+    #include "../../initialConditions"
+    variables
+    (
+        "baseline=$O2ConsumptionRate;"
+    );
+    expression "baseline";
+    dimensions [0 -3 -1 0 0 0 0 ];
+}
+
+PO2Crit              PO2Crit [ 0 0 0 0 0 0 0 ] $PO2Crit; // [mmHg]
+
+dissociationRate     dissociationRate [ 0 0 -1 0 0 0 0 ] $dissociationRate;
+VMolO2               VMolO2 [0 0 0 0 0 0 0 ] $VMolO2; // [mlO2 mol-1], molar volume of O2 under standard conditions
+NHb                  NHb [0 -3 0 0 0 0 0 ] $NHb; // [mol m^-3], molar concentration of Hb in RBCs
+
+dissociationCurve
+{
+    #include "../../initialConditions"
+    type         Hill;
+    P50          $P50;
+    exponent     $hillExponent;
+}
+
+RBCVelocity           RBCVelocity [0 1 -1 0 0 0 0 ] $RBCVelocity;
+linearDensity         linearDensity [0 0 0 0 0 0 0 ] $LDMean;
+
+useAnalyticalIVR      false;
+IVRLDHalf             IVRLDHalf [ 0 1 1 0 0 0 0 ] $IVRLDHalf;
+minimalPO2            minimalPO2 [ 0 0 0 0 0 0 0 ] 8.4;
+minimalHb             minimalHb  [ 0 0 0 0 0 0 0 ] 0.01;

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source config_vars
+
+ln -s ../../RBC2/0        RBC/0/RBC2
+ln -s ../../RBC2/constant RBC/constant/RBC2
+ln -s ../../RBC2/system   RBC/system/RBC2
+
+#- Parallel links:
+# cd $eulerCaseDir
+# foreach proc(processor*)
+# echo $proc
+# ln -s ../../../$lagCaseDir/$proc/0 $proc/0/RBC
+# ln -s ../../../$lagCaseDir/$proc/constant $proc/constant/RBC
+# end
+# cd ..

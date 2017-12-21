@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+export RBCBaseCaseDir="RBC"
+
+blockMesh
+blockMesh -case sampleRBC
+
+# Copy fields to 0 directory
+cd $RBCBaseCaseDir
+mkdir -p 0
+cp 0.org/Hb.org        0/Hb
+cp 0.org/PO2_RBC.org   0/PO2_RBC
+cd ..
+
+./testRBCCollection

@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      RBCMoverDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../../initialConditions"
+#include "../../geometricData"
+
+type            RBCVelocityDynamicElongationMover;
+
+linearDensity   $LDMean;
+RBCVelocity     $RBCVelocity;
+
+RBCRadius       $radiusRBC;
+RBCVolume       $RBCVolume;
+plasmaRadius    $radiusPlasma;
+
+initialField    Hb;
+initialValue    0.5;
+
+inletFieldName  Hb;
+inletValue
+{
+    #include "../../initialConditions"
+    type        constant;
+    value       $HbInlet;
+}
+
+PO2AveragingZone    plasma;
+
+RBCRadiusTable
+{
+    readerType      csv;
+    fileName        "$FOAM_CASE/constant/RBCRadiusTable.csv";
+    hasHeaderLine   true;
+    timeColumn      0;
+    valueColumns    (1);
+    outOfBounds     clamp;
+}
+
+RBCVelocityFactor
+{
+    readerType      csv;
+    fileName        "$FOAM_CASE/constant/RBCVelocityFactorTable.csv";
+    hasHeaderLine   true;
+    timeColumn      0;
+    valueColumns    (1);
+    outOfBounds     clamp;
+}
+
+sampleMeshName  sampleRBC;

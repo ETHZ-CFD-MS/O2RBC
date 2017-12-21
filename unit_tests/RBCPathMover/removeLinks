@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source config_vars
+
+cd $eulerCaseDir
+
+rm -r 0/$RBCCaseDir
+rm -r constant/$RBCCaseDir
+rm -r system/$RBCCaseDir
+
+rm -r 0/$sampleRBCDir
+rm -r constant/$sampleRBCDir
+rm -r system/$sampleRBCDir
+
+cd ..
+

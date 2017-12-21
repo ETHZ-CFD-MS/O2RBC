@@ -1,0 +1,1 @@
+../model/kroghSolution1D.py

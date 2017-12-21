@@ -1,0 +1,21 @@
+#!/bin/bash
+
+mkdir -p 0/cylinder
+
+cp 0.org/cylinder.org/inLumenCylinder.org 0/cylinder/inLumenCylinder
+cp 0.org/cylinder.org/inWallCylinder.org  0/cylinder/inWallCylinder
+
+cp 0.org/alpha.org 0/alpha
+
+blockMesh
+checkMesh
+
+m4 constant/cylinder/polyMesh/cylinderMesh.m4 > constant/cylinder/polyMesh/blockMeshDict 
+blockMesh -region cylinder
+checkMesh -region cylinder
+
+topoSet -region cylinder
+
+setFields -region cylinder
+
+./testRegionDependentField
